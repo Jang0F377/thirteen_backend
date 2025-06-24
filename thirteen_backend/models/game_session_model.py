@@ -21,10 +21,16 @@ class GameSession(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.now(timezone.utc)
     )
-    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    ended_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     status: Mapped[GameStatus] = mapped_column(String(20), default=GameStatus.CREATED)
-    placements: Mapped[list[dict[str, int]] | None] = mapped_column(JSONB, nullable=True)
+    placements: Mapped[list[dict[str, int]] | None] = mapped_column(
+        JSONB, nullable=True
+    )
 
     # relationships
     game_events: Mapped[list["GameEvent"]] = relationship()

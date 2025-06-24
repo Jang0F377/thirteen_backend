@@ -1,8 +1,9 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Any, Optional
 from dataclasses import dataclass, field
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
+from redis.asyncio import Redis
 
 
 class AuthorizationContext:
@@ -43,6 +44,10 @@ class AbstractContext(ABC):
     db_session: "AsyncSession"
     auth_context: "AuthorizationContext | None"
 
+    @property
+    @abstractmethod
+    def redis_client(self) -> Redis: ...
+
 
 class APIRequestContext(AbstractContext):
     def __init__(
@@ -54,3 +59,8 @@ class APIRequestContext(AbstractContext):
         self.request = request
         self.db_session = db_session
         self.auth_context = auth_context
+
+        @property
+        def redis_client(self) -> Redis:
+            redis_client: Redis = self.request.app.state.redis_client
+            return redis_client
