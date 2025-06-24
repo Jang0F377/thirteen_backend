@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "thirteen-backend"
+version = "0.1.0"
+description = ""
+authors = ["Matt Garrett <mjgarrett7092@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+psycopg2-binary = "^2.9.10"
+sqlalchemy = "^2.0.41"
+asyncpg = "^0.30.0"
+python-json-logger = "^3.3.0"
+alembic = "^1.16.2"
+python-dotenv = "^1.1.0"
+orjson = "^3.10.18"
+redis = {extras = ["hiredis"], version = "^6.2.0"}
+fastapi = {extras = ["standard"], version = "^0.115.13"}
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,60 @@
+networks:
+  thirteen-backend:
+    name: thirteen-network-main
+    driver: bridge
+
+volumes:
+  thirteen-postgres-data:
+  thirteen-cache:
+
+services:
+  thirteen-backend:
+    image: thirteen-backend:latest
+    container_name: thirteen-backend
+    env_file: ./.env
+    depends_on:
+      thirteen-postgres:
+        condition: service_healthy
+      thirteen-cache:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - thirteen-backend
+    volumes:
+      - .:/app
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+
+  thirteen-postgres:
+    image: postgres:17-alpine
+    container_name: thirteen-postgres
+    volumes:
+      - thirteen-postgres-data:/var/lib/postgresql/data
+    networks:
+      - thirteen-backend
+    environment:
+      POSTGRES_PASSWORD: "${BACKEND_DB_PASSWORD}"
+      POSTGRES_USER: "${BACKEND_DB_USER}"
+      POSTGRES_DB: "${BACKEND_DB_NAME}"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -d ${BACKEND_DB_NAME} -U ${BACKEND_DB_USER}"]
+      interval: 20s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    ports:
+      - ${BACKEND_DB_PORT}:${BACKEND_DB_PORT}
+
+  thirteen-cache:
+    container_name: thirteen-cache
+    image: redis/redis-stack:7.2.0-v15
+    command: redis-server --loadmodule /opt/redis-stack/lib/rejson.so --requirepass ${CACHE_PASSWORD}
+    volumes:
+      - thirteen-cache:/data
+    networks:
+      - thirteen-backend
+    restart: unless-stopped

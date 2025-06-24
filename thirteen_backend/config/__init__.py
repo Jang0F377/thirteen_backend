@@ -1,0 +1,13 @@
+import os
+
+ENV = os.getenv("ENV", "development")
+
+BACKEND_DB_HOST = os.getenv("BACKEND_DB_HOST")
+BACKEND_DB_USER = os.getenv("BACKEND_DB_USER")
+BACKEND_DB_NAME = os.getenv("BACKEND_DB_NAME")
+BACKEND_DB_PASSWORD = os.getenv("BACKEND_DB_PASSWORD")
+BACKEND_DB_PORT = os.getenv("BACKEND_DB_PORT")
+BACKEND_DB_DRIVER = os.getenv("BACKEND_DB_DRIVER")
+BACKEND_DB_DIALECT = os.getenv("BACKEND_DB_DIALECT")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+CACHE_URL = os.getenv("CACHE_URL")
