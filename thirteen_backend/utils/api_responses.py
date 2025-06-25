@@ -35,14 +35,6 @@ def success(
     return json.ORJSONResponse(content=data, status_code=status_code, headers=headers)
 
 
-class Error(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    status: Literal["error"]
-    error: Any
-    message: str
-
-
 def format_error(error: Any, message: str):
     return {"status": "error", "error": error, "message": message}
 

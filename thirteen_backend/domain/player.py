@@ -4,7 +4,6 @@ import uuid
 from thirteen_backend.domain.card import Card
 
 
-
 @dataclass(slots=True)
 class Player:
     player_index: int  # 0-based seat number

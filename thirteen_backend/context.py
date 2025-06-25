@@ -43,10 +43,7 @@ class RequestContext:
 class AbstractContext(ABC):
     db_session: "AsyncSession"
     auth_context: "AuthorizationContext | None"
-
-    @property
-    @abstractmethod
-    def redis_client(self) -> Redis: ...
+    redis_client: "Redis"
 
 
 class APIRequestContext(AbstractContext):
@@ -55,12 +52,9 @@ class APIRequestContext(AbstractContext):
         request: "Request | None",
         db_session: "AsyncSession",
         auth_context: "AuthorizationContext | None",
+        redis_client: "Redis",
     ) -> None:
         self.request = request
         self.db_session = db_session
         self.auth_context = auth_context
-
-        @property
-        def redis_client(self) -> Redis:
-            redis_client: Redis = self.request.app.state.redis_client
-            return redis_client
+        self.redis_client = redis_client

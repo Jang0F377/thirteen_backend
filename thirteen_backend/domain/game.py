@@ -8,7 +8,9 @@ class Game:
 
     def __init__(self, cfg: DeckConfig | None = None):
         self.cfg = cfg or DeckConfig()
-        self.players: list[Player] = [Player(idx) for idx in range(self.cfg.players_count)]
+        self.players: list[Player] = [
+            Player(idx) for idx in range(self.cfg.players_count)
+        ]
         self.deck = Deck(self.cfg)
         self._deal_cards()
         self.current_turn_order: list[int] = self._determine_initial_turn_order()
@@ -27,16 +29,23 @@ class Game:
 
     def _determine_initial_turn_order(self) -> list[int]:
         """Player who has 3♢ goes first; order proceeds clockwise."""
-        three_d_owner = next(idx for idx, pl in enumerate(self.players) if any(c.rank == "3" and c.suit == "D" for c in pl.hand))
-        order = [(three_d_owner + i) % self.cfg.players_count for i in range(self.cfg.players_count)]
+        three_d_owner = next(
+            idx
+            for idx, pl in enumerate(self.players)
+            if any(c.rank == "3" and c.suit == "D" for c in pl.hand)
+        )
+        order = [
+            (three_d_owner + i) % self.cfg.players_count
+            for i in range(self.cfg.players_count)
+        ]
         return order
 
     def to_dict(self):
         return self.state.to_dict()
-    
-    
+
+
 # To manually test
 if __name__ == "__main__":
     game = Game()
     print(f"Turn order: {game.current_turn_order}")
-    print(game.to_dict()) 
+    print(game.to_dict())

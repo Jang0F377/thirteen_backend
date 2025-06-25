@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from thirteen_backend.domain.player import Player
 
 
-
 @dataclass(slots=True)
 class GameState:
     players_state: list[Player]

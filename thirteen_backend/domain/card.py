@@ -1,6 +1,11 @@
 from dataclasses import dataclass
 
-from thirteen_backend.domain.constants import CARD_SUITS, CARD_VALUES, RANK_ORDER, SUIT_ORDER
+from thirteen_backend.domain.constants import (
+    CARD_SUITS,
+    CARD_VALUES,
+    RANK_ORDER,
+    SUIT_ORDER,
+)
 
 
 @dataclass(slots=True, frozen=True)

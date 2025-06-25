@@ -11,8 +11,8 @@ class DeckConfig:
     times_shuffled: int = 5
     deck_count: int = 1
     players_count: int = 4
-    
-    
+
+
 class Deck:
     """Utility to create and shuffle one or multiple 52-card decks."""
 
@@ -39,4 +39,3 @@ class Deck:
         for _ in range(cards_per_player):
             for p in players:
                 p.hand.append(self.cards.pop())
-

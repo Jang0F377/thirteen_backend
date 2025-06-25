@@ -1,4 +1,3 @@
-
 CARD_SUITS: dict[str, str] = {
     "D": "Diamonds",
     "C": "Clubs",
@@ -24,4 +23,4 @@ CARD_VALUES: dict[str, str] = {
 }
 
 RANK_ORDER = list(CARD_VALUES.keys())  # ['3', '4', ... '2']
-SUIT_ORDER = list(CARD_SUITS.keys())   # ['D','C','H','S']
+SUIT_ORDER = list(CARD_SUITS.keys())  # ['D','C','H','S']

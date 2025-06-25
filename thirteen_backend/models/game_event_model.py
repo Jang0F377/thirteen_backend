@@ -15,6 +15,7 @@ class GameEventType(StrEnum):
     LEAVE = "LEAVE"
     START = "START"
     END = "END"
+    INIT = "INIT"
 
 
 class GameEvent(Base):

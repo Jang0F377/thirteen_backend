@@ -9,4 +9,4 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 for module in os.listdir(os.path.dirname(__file__)):
     if module.endswith(".py") and module != "__init__.py":
-        __import__(f"squid_game_backend.models.{module.removesuffix('.py')}")
+        __import__(f"thirteen_backend.models.{module.removesuffix('.py')}")
