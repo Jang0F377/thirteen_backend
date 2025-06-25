@@ -64,7 +64,7 @@ async def create_game_session(
         context.db_session.add(player_model)
         context.db_session.add(game_player)
 
-    await context.db_session.commit()
+    await context.db_session.flush()
 
     session_set_success = await session_state_repository.set_session_state(
         context=context,
@@ -91,6 +91,7 @@ async def create_game_session(
         event_type=GameEventType.INIT,
         payload=init_game_state.to_dict(),
         ts=ts,
+        flush_to_db=False,
     )
 
     await session_state_repository.push_session_event(
@@ -98,26 +99,7 @@ async def create_game_session(
         game_id=game_session.id,
         event=init_game_event,
     )
-
-    # seq = await session_state_repository.increment_session_sequencer(
-    #     context=context,
-    #     game_id=game_session.id,
-    # )
-
-    # start_game_event = await game_event_repository.create_game_event(
-    #     context=context,
-    #     game_id=game_session.id,
-    #     sequence=seq,
-    #     turn=1,
-    #     event_type=GameEventType.START,
-    #     payload=None,
-    #     ts=datetime.now(timezone.utc),
-    # )
-
-    # await session_state_repository.push_session_event(
-    #     context=context,
-    #     game_id=game_session.id,
-    #     event=start_game_event,
-    # )
+    
+    await context.db_session.commit()
 
     return {"session_id": session_id, "player_id": human_player_id}

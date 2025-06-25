@@ -1,4 +1,5 @@
 from uuid import UUID
+import json
 
 from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game_state import GameState
@@ -25,10 +26,10 @@ async def set_session_state(
     """
     state_key = _make_session_state_key(game_id)
 
-    await context.redis_client.setex(
+    return await context.redis_client.setex(
         name=state_key,
         time=60 * 60 * 24,
-        value=game_state.to_dict(),
+        value=json.dumps(game_state.to_dict()),
     )
 
 
@@ -40,8 +41,8 @@ async def push_session_event(
     """
     event_key = _make_session_event_key(game_id)
     await context.redis_client.lpush(
-        name=event_key,
-        value=event.to_dict(),
+        event_key,
+        json.dumps(event.to_dict()),
     )
 
 

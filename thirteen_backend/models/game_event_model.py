@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 from datetime import datetime, timezone
 from thirteen_backend.models import Base
 
+from thirteen_backend.utils.format_utils import format_datetime, format_uuid_as_str
 
 class GameEventType(StrEnum):
     PLAY = "PLAY"
@@ -16,6 +17,7 @@ class GameEventType(StrEnum):
     START = "START"
     END = "END"
     INIT = "INIT"
+    STATE_SYNC = "STATE_SYNC"
 
 
 class GameEvent(Base):
@@ -30,3 +32,14 @@ class GameEvent(Base):
 
     # relationships
     game_id: Mapped[UUID] = mapped_column(ForeignKey("game_sessions.id"))
+    
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": format_uuid_as_str(self.id),
+            "seq": self.seq,
+            "turn": self.turn,
+            "type": self.type,
+            "payload": self.payload,
+            "ts": format_datetime(self.ts),
+            "game_id": format_uuid_as_str(self.game_id),
+        }
