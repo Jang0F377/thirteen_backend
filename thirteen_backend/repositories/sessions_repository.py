@@ -17,13 +17,37 @@ from thirteen_backend.types import GameConfig
 async def create_game_session(
     *, context: APIRequestContext, cfg: GameConfig
 ) -> dict[str, str]:
-    """
-    Steps:
-    1. Create a new game
-    2. Initialize a new GameSession class
-    3. Create initial game events
-    4. Write initial game state into redis
-    5. Return {session_id, player_id}
+    """Create and persist a new multiplayer *Thirteen* game session.
+
+    The high-level workflow performed by this helper is as follows:
+
+    1. Instantiate a new :class:`~thirteen_backend.domain.game.Game` domain
+       object using the provided ``cfg`` – this yields the initial game state
+       as well as four :class:`~thirteen_backend.domain.player.Player` domain
+       objects (one human and three bots).
+    2. Persist a corresponding :class:`~thirteen_backend.models.game_session_model.GameSession`
+       row to the database marking the session *in-progress*.
+    3. Persist each player to the ``player`` table and link them to the game
+       via the ``game_player`` join table.
+    4. Cache the initial game state and initialise the per-session sequence
+       counter in Redis (both behind a single pipeline).
+    5. Emit an ``INIT`` :class:`~thirteen_backend.models.game_event_model.GameEvent`
+       (sequence ``0``) and push it onto the Redis event buffer.
+    6. Commit the SQL transaction and execute the Redis pipeline.
+
+    Parameters
+    ----------
+    context:
+        Request-scoped object bundling the database session and Redis client.
+    cfg:
+        Configuration used to initialise the :class:`~thirteen_backend.domain.game.Game`.
+
+    Returns
+    -------
+    dict[str, str]
+        Mapping containing the ``session_id`` (UUID string) of the newly
+        created game and the ``player_id`` representing the *human* player so
+        that the caller can authenticate subsequent moves.
     """
     pipe = context.redis_client.pipeline()
     init_game_state = Game(cfg=cfg)
@@ -78,7 +102,7 @@ async def create_game_session(
             user_feedback="Failed to set session state",
             error_code=ErrorCode.INTERNAL_SERVER_ERROR,
         )
-        
+
     await session_state_repository.initialize_session_sequencer(
         pipe=pipe,
         game_id=game_session.id,
@@ -104,6 +128,5 @@ async def create_game_session(
 
     await pipe.execute()
     await context.db_session.commit()
-    
 
     return {"session_id": session_id, "player_id": human_player_id}
