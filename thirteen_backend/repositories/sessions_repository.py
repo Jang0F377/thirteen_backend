@@ -22,17 +22,17 @@ async def create_game_session(
     The high-level workflow performed by this helper is as follows:
 
     1. Instantiate a new :class:`~thirteen_backend.domain.game.Game` domain
-       object using the provided ``cfg`` – this yields the initial game state
-       as well as four :class:`~thirteen_backend.domain.player.Player` domain
-       objects (one human and three bots).
+    object using the provided ``cfg`` – this yields the initial game state
+    as well as four :class:`~thirteen_backend.domain.player.Player` domain
+    objects (one human and three bots).
     2. Persist a corresponding :class:`~thirteen_backend.models.game_session_model.GameSession`
-       row to the database marking the session *in-progress*.
+    row to the database marking the session *in-progress*.
     3. Persist each player to the ``player`` table and link them to the game
-       via the ``game_player`` join table.
+    via the ``game_player`` join table.
     4. Cache the initial game state and initialise the per-session sequence
-       counter in Redis (both behind a single pipeline).
+    counter in Redis (both behind a single pipeline).
     5. Emit an ``INIT`` :class:`~thirteen_backend.models.game_event_model.GameEvent`
-       (sequence ``0``) and push it onto the Redis event buffer.
+    (sequence ``0``) and push it onto the Redis event buffer.
     6. Commit the SQL transaction and execute the Redis pipeline.
 
     Parameters
