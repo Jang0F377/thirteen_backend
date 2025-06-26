@@ -9,6 +9,7 @@ from thirteen_backend.models import Base
 
 from thirteen_backend.utils.format_utils import format_datetime, format_uuid_as_str
 
+
 class GameEventType(StrEnum):
     PLAY = "PLAY"
     PASS = "PASS"
@@ -32,7 +33,7 @@ class GameEvent(Base):
 
     # relationships
     game_id: Mapped[UUID] = mapped_column(ForeignKey("game_sessions.id"))
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "id": format_uuid_as_str(self.id),

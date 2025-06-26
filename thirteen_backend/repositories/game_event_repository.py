@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -47,10 +47,8 @@ async def create_game_event(
         The newly-created ``GameEvent`` instance **after** it has been flushed to
         the database (i.e. it will contain a generated ``id``).
     """
-
-    session: AsyncSession = context.db_session
-
     event = GameEvent(
+        id=uuid4(),
         seq=sequence,
         turn=turn,
         type=event_type,
@@ -58,9 +56,9 @@ async def create_game_event(
         ts=ts or datetime.now(timezone.utc),
         game_id=game_id,
     )
-    
+
     if flush_to_db:
-        session.add(event)
-        await session.flush()
+        context.db_session.add(event)
+        await context.db_session.flush()
 
     return event

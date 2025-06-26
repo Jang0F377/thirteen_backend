@@ -25,6 +25,7 @@ async def create_game_session(
     4. Write initial game state into redis
     5. Return {session_id, player_id}
     """
+    pipe = context.redis_client.pipeline()
     init_game_state = Game(cfg=cfg)
 
     session_id = uuid4()
@@ -67,7 +68,7 @@ async def create_game_session(
     await context.db_session.flush()
 
     session_set_success = await session_state_repository.set_session_state(
-        context=context,
+        pipe=pipe,
         game_id=game_session.id,
         game_state=init_game_state,
     )
@@ -77,16 +78,17 @@ async def create_game_session(
             user_feedback="Failed to set session state",
             error_code=ErrorCode.INTERNAL_SERVER_ERROR,
         )
-
-    seq = await session_state_repository.increment_session_sequencer(
-        context=context,
+        
+    await session_state_repository.initialize_session_sequencer(
+        pipe=pipe,
         game_id=game_session.id,
+        sequencer=0,
     )
 
     init_game_event = await game_event_repository.create_game_event(
         context=context,
         game_id=game_session.id,
-        sequence=seq,
+        sequence=0,
         turn=0,
         event_type=GameEventType.INIT,
         payload=init_game_state.to_dict(),
@@ -95,11 +97,13 @@ async def create_game_session(
     )
 
     await session_state_repository.push_session_event(
-        context=context,
+        pipe=pipe,
         game_id=game_session.id,
         event=init_game_event,
     )
-    
+
+    await pipe.execute()
     await context.db_session.commit()
+    
 
     return {"session_id": session_id, "player_id": human_player_id}
