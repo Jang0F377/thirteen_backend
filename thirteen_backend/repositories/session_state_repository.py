@@ -1,8 +1,8 @@
 from uuid import UUID
 import json
 
+from redis.asyncio import Redis
 from redis.asyncio.client import Pipeline
-from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.models.game_event_model import GameEvent
 
@@ -181,7 +181,7 @@ async def initialize_session_sequencer(
 
 async def get_session_state(
     *,
-    context: APIRequestContext,
+    redis_client: Redis,
     game_id: UUID,
 ) -> GameState | None:
     """Retrieve and deserialize the current game state for the given session.
@@ -200,7 +200,7 @@ async def get_session_state(
         The reconstructed game state if present; *None* otherwise.
     """
     state_key = _make_session_state_key(game_id)
-    game_state = await context.redis_client.get(name=state_key)
+    game_state = await redis_client.get(name=state_key)
     if game_state is None:
         return None
     game_state_json = json.loads(game_state)
@@ -215,7 +215,7 @@ async def get_session_state(
 
 async def get_session_sequencer(
     *,
-    context: APIRequestContext,
+    redis_client: Redis,
     game_id: UUID,
 ) -> int | None:
     """Return the current value of the session's sequence counter, if set.
@@ -233,7 +233,7 @@ async def get_session_sequencer(
         Sequence counter value if present; *None* otherwise.
     """
     sequencer_key = _make_session_sequencer_key(game_id)
-    sequencer = await context.redis_client.get(name=sequencer_key)
+    sequencer = await redis_client.get(name=sequencer_key)
     if sequencer is None:
         return None
     return int(sequencer)

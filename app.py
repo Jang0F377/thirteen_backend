@@ -5,7 +5,7 @@ import redis.asyncio as aioredis
 
 from thirteen_backend import config
 from thirteen_backend.logger import LOGGER
-from thirteen_backend.api import healthcheck, sessions
+from thirteen_backend.api import healthcheck, sessions, websocket
 
 
 logger = LOGGER
@@ -24,7 +24,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(healthcheck.router)
 app.include_router(sessions.router)
-
+app.include_router(websocket.router)
 
 app.add_middleware(
     CORSMiddleware,
