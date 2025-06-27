@@ -16,6 +16,8 @@ python-dotenv = "^1.1.0"
 orjson = "^3.10.18"
 redis = {extras = ["hiredis"], version = "^6.2.0"}
 fastapi = {extras = ["standard"], version = "^0.115.13"}
+pytest = "^8.4.1"
+pytest-asyncio = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

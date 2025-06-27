@@ -62,9 +62,7 @@ def _make_session_sequencer_key(game_id: UUID) -> str:
     return f"session:{game_id}:seq"
 
 
-async def set_session_state(
-    *, pipe: Pipeline, game_id: UUID, game_state: Game
-) -> bool:
+async def set_session_state(*, pipe: Pipeline, game_id: UUID, game_state: Game) -> bool:
     """Persist the current :class:`~thirteen_backend.domain.game_state.Game`
     for the supplied session in Redis.
 

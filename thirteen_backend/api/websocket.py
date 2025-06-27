@@ -5,7 +5,7 @@ from thirteen_backend.repositories.session_state_repository import (
     get_session_sequencer,
     get_session_state,
 )
-from thirteen_backend.services.websocket.websocket_handlers import handle_play
+from thirteen_backend.services.websocket.websocket_handlers import handle_play, handle_pass
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
 
@@ -57,7 +57,11 @@ async def websocket_endpoint(
                     msg=incoming_message,
                 )
             elif msg_type == "PASS":
-                pass
+                await handle_pass(
+                    redis_client=ws.app.state.redis_client,
+                    session_id=session_id,
+                    player_id=player_id,
+                )
             elif msg_type == "LEAVE":
                 pass
             elif msg_type == "FINISH":

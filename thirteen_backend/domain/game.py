@@ -73,7 +73,8 @@ class Game:
         players: list[Player] = []
         for player_dict in data["playersState"]:
             hand: list[Card] = [
-                Card(suit=c["suit"], rank=c["rank"]) for c in player_dict.get("hand", [])
+                Card(suit=c["suit"], rank=c["rank"])
+                for c in player_dict.get("hand", [])
             ]
             players.append(
                 Player(
