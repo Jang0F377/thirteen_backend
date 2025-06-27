@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from uuid import uuid4
 from thirteen_backend.errors import Error, ErrorCode
 from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game import Game
@@ -51,8 +50,7 @@ async def create_game_session(
     """
     pipe = context.redis_client.pipeline()
     init_game_state = Game(cfg=cfg)
-
-    session_id = uuid4()
+    session_id = init_game_state.state.id
     human_player_id: str = ""
     ts = datetime.now(timezone.utc)
 
@@ -68,18 +66,16 @@ async def create_game_session(
     context.db_session.add(game_session)
 
     for player in init_game_state.players:
-        if player.player_index == 0:
-            name = "Human"
-            is_bot = False
-            human_player_id = player.id
-        else:
+        if player.is_bot:
             name = f"BOT_{player.player_index}"
-            is_bot = True
+        else:
+            name = "Human"
+            human_player_id = player.id
 
         player_model = Player(
             id=player.id,
             name=name,
-            is_bot=is_bot,
+            is_bot=player.is_bot,
         )
         game_player = GamePlayer(
             game_id=game_session.id,

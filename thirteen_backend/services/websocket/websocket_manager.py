@@ -28,7 +28,7 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
         conn_id = self._connection_key(ws)
         self._active.setdefault(session_id, {})[conn_id] = ws
         logger.info("WS connected: session=%s conn=%s", session_id, conn_id)
-        return ws
+        return conn_id
 
     def disconnect(self, session_id: str, ws: WebSocket) -> None:
         """Remove the socket from bookkeeping (does *not* close it)."""
@@ -62,6 +62,27 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
             logger.info(
                 "Cleaned %d dead sockets from session %s", len(dead), session_id
             )
+
+    async def send_to(
+        self,
+        session_id: str,
+        conn_id: str,
+        message: Any,
+    ) -> bool:
+        """Send *message* to one connection. Returns True if delivered."""
+        ws = self._active.get(session_id, {}).get(conn_id)
+        if ws is None:  # not found / already gone
+            return False
+        try:
+            if isinstance(message, str):
+                await ws.send_text(message)
+            else:
+                await ws.send_json(message)
+            return True
+        except WebSocketDisconnect:
+            # cleanup & report failure
+            self.disconnect(session_id, ws)
+            return False
 
     # ------------------------------------------------------------------
     # Introspection utilities

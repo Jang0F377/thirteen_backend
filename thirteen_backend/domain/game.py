@@ -9,7 +9,7 @@ class Game:
     def __init__(self, cfg: DeckConfig | None = None):
         self.cfg = cfg or DeckConfig()
         self.players: list[Player] = [
-            Player(idx) for idx in range(self.cfg.players_count)
+            Player(idx, is_bot=idx != 0) for idx in range(self.cfg.players_count)
         ]
         self.deck = Deck(self.cfg)
         self._deal_cards()

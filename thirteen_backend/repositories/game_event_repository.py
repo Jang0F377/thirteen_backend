@@ -63,27 +63,3 @@ async def create_game_event(
         await context.db_session.flush()
 
     return event
-
-
-async def send_state_sync_event(
-    *,
-    context: APIRequestContext,
-    sequence: int,
-    game_id: UUID,
-    game_state: GameState,
-) -> None:
-    """Send a state sync event to the player."""
-    event = GameEvent(
-        id=uuid4(),
-        seq=sequence,
-        turn=game_state.turn_number,
-        type=GameEventType.STATE_SYNC,
-        payload=game_state.to_dict(),
-        ts=datetime.now(timezone.utc),
-        game_id=game_id,
-    )
-
-    await context.redis_client.lpush(
-        f"session:{game_id}:events",
-        json.dumps(event.to_dict()),
-    )
