@@ -6,6 +6,7 @@ from thirteen_backend.repositories.session_state_repository import (
 )
 from thirteen_backend.services.websocket.websocket_handlers import handle_play
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
+from thirteen_backend.services.websocket.websocket_utils import create_state_sync_event
 
 
 router = APIRouter(
@@ -33,10 +34,17 @@ async def websocket_endpoint(
         await ws.close(code=1008, reason="Game state not found")
         return game_state_not_found(session_id)
 
+    state_sync_event = create_state_sync_event(
+        game_id=session_id,
+        sequence=seq,
+        turn=game_state.turn_number,
+        game_state=game_state,
+    )
+    
     await websocket_manager.send_to(
         session_id=session_id,
         conn_id=conn_id,
-        message={"type": "JOIN", "player_id": player_id},
+        message=state_sync_event.to_dict(),
     )
 
     while True:

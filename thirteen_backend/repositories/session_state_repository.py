@@ -3,7 +3,9 @@ import json
 
 from redis.asyncio import Redis
 from redis.asyncio.client import Pipeline
+from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.game_state import GameState
+from thirteen_backend.domain.player import Player
 from thirteen_backend.models.game_event_model import GameEvent
 
 
@@ -205,8 +207,25 @@ async def get_session_state(
         return None
     game_state_json = json.loads(game_state)
 
+    # Convert player dictionaries to Player objects
+    players = []
+    for player_dict in game_state_json["playersState"]:
+        # Convert card dictionaries to Card objects
+        cards = []
+        if "hand" in player_dict:
+            for card_dict in player_dict["hand"]:
+                cards.append(Card(suit=card_dict["suit"], rank=card_dict["rank"]))
+        
+        player = Player(
+            player_index=player_dict["player"],
+            is_bot=player_dict["is_bot"],
+            id=player_dict["id"],
+            hand=cards
+        )
+        players.append(player)
+
     return GameState(
-        players_state=game_state_json["playersState"],
+        players_state=players,
         current_turn_order=game_state_json["currentTurnOrder"],
         turn_number=game_state_json["turnNumber"],
         who_has_power=game_state_json["whoHasPower"],
