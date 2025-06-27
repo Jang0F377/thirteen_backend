@@ -1,6 +1,7 @@
 from typing import Any
 
 from redis.asyncio import Redis
+from thirteen_backend.domain.game import Game
 
 
 async def handle_play(
@@ -19,4 +20,12 @@ async def handle_pass(
     session_id: str,
     player_id: str,
 ) -> None:
+    pass
+
+
+async def _load_engine(
+    *,
+    redis_client: Redis,
+    session_id: str,
+) -> tuple[Game, int]:
     pass

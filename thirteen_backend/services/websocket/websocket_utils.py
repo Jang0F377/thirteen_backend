@@ -1,25 +1,26 @@
 from datetime import datetime, timezone
-from uuid import UUID, uuid4
-
-from thirteen_backend.domain.game_state import GameState
-from thirteen_backend.models.game_event_model import GameEvent, GameEventType
+import json
 
 
-def create_state_sync_event(
+from thirteen_backend.domain.game import Game
+from thirteen_backend.models.game_event_model import GameEventType
+
+
+
+
+
+def make_state_sync(
     *,
-    game_id: UUID,
-    sequence: int,
-    turn: int,
-    game_state: GameState,
-) -> GameEvent:
-    state_sync_event = GameEvent(
-        id=uuid4(),
-        seq=sequence,
-        turn=turn,
-        type=GameEventType.STATE_SYNC,
-        payload=game_state.to_dict(),
-        ts=datetime.now(timezone.utc),
-        game_id=game_id,
-    )
-
-    return state_sync_event
+    session_id: str,
+    seq: int,
+    game: Game
+) -> str:
+    """Serialise STATE_SYNC message as JSON string."""
+    return json.dumps({
+        "type": GameEventType.STATE_SYNC,
+        "seq": seq,
+        "turn": game.state.turn_number,
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "session_id": session_id,
+        "game_state": game.state.to_dict(),
+    })

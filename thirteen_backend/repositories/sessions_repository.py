@@ -51,7 +51,7 @@ async def create_game_session(
     """
     pipe = context.redis_client.pipeline()
     init_game_state = Game(cfg=cfg)
-    session_id = init_game_state.state.id
+    session_id = init_game_state.id
     human_player_id: str = ""
     ts = datetime.now(timezone.utc)
 
