@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
 import uuid
+from dataclasses import dataclass, field
 
 from thirteen_backend.domain.player import Player
 

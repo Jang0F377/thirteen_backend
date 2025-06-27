@@ -2,8 +2,9 @@
 A module for (de)serialization of JSON data for HTTP
 """
 
-from typing import Any
 import uuid
+from typing import Any
+
 import orjson
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel

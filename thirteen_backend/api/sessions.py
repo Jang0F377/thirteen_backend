@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Request, status
-from thirteen_backend.errors import Error
+
 from thirteen_backend.adapters import postgres
 from thirteen_backend.context import APIRequestContext
+from thirteen_backend.errors import Error
 from thirteen_backend.repositories import sessions_repository
-from thirteen_backend.utils.api_responses import Success, success, error
 from thirteen_backend.types import GameConfig
-
+from thirteen_backend.utils.api_responses import Success, error, success
 
 router = APIRouter(tags=["session"])
 

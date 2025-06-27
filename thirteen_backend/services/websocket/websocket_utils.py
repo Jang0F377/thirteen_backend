@@ -21,5 +21,5 @@ def create_state_sync_event(
         ts=datetime.now(timezone.utc),
         game_id=game_id,
     )
-    
+
     return state_sync_event

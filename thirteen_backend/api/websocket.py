@@ -1,13 +1,13 @@
-from fastapi import APIRouter, WebSocket, Request, WebSocketDisconnect
+from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
+
 from thirteen_backend.exceptions import game_state_not_found
 from thirteen_backend.repositories.session_state_repository import (
-    get_session_state,
     get_session_sequencer,
+    get_session_state,
 )
 from thirteen_backend.services.websocket.websocket_handlers import handle_play
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import create_state_sync_event
-
 
 router = APIRouter(
     prefix="/ws",
@@ -40,7 +40,8 @@ async def websocket_endpoint(
         turn=game_state.turn_number,
         game_state=game_state,
     )
-    
+
+    # Send initial state sync event to the client
     await websocket_manager.send_to(
         session_id=session_id,
         conn_id=conn_id,
@@ -60,12 +61,9 @@ async def websocket_endpoint(
                 )
             elif msg_type == "PASS":
                 pass
-            elif msg_type == "JOIN":
-                await websocket_manager.broadcast(
-                    session_id=session_id,
-                    message={"type": "JOIN", "player_id": player_id},
-                )
             elif msg_type == "LEAVE":
+                pass
+            elif msg_type == "FINISH":
                 pass
             else:
                 await ws.close(code=1008, reason="Invalid message type")

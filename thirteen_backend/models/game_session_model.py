@@ -1,9 +1,11 @@
+from datetime import datetime, timezone
 from enum import StrEnum
 from uuid import UUID, uuid4
-from datetime import datetime, timezone
-from sqlalchemy import String, DateTime
+
+from sqlalchemy import DateTime, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from thirteen_backend.models import Base
 
 

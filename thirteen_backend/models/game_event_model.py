@@ -1,12 +1,13 @@
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
-from sqlalchemy import String, DateTime, Integer, ForeignKey
+from uuid import UUID, uuid4
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
-from uuid import UUID, uuid4
-from datetime import datetime, timezone
-from thirteen_backend.models import Base
 
+from thirteen_backend.models import Base
 from thirteen_backend.utils.format_utils import format_datetime, format_uuid_as_str
 
 
@@ -16,7 +17,7 @@ class GameEventType(StrEnum):
     JOIN = "JOIN"
     LEAVE = "LEAVE"
     START = "START"
-    END = "END"
+    FINISH = "FINISH"
     INIT = "INIT"
     STATE_SYNC = "STATE_SYNC"
 

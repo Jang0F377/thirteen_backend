@@ -1,7 +1,8 @@
-from fastapi import APIRouter
-from sqlalchemy import select
 from datetime import datetime
 from typing import Any
+
+from fastapi import APIRouter
+from sqlalchemy import select
 
 from thirteen_backend.adapters import postgres
 from thirteen_backend.utils import api_responses

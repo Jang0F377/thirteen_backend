@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
-from thirteen_backend.errors import Error, ErrorCode
+
 from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game import Game
+from thirteen_backend.errors import Error, ErrorCode
 from thirteen_backend.models.game_event_model import GameEventType
 from thirteen_backend.models.game_player_model import GamePlayer
-from thirteen_backend.models.player_model import Player
 from thirteen_backend.models.game_session_model import GameSession, GameStatus
+from thirteen_backend.models.player_model import Player
 from thirteen_backend.repositories import (
     game_event_repository,
     session_state_repository,

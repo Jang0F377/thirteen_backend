@@ -4,9 +4,9 @@ Abstracts connection bookkeeping away from the FastAPI endpoint so the rest
 of the backend can simply call `websocket_manager.broadcast(session_id, msg)`.
 """
 
-import uuid
 import logging
-from typing import Dict, Any, Set
+import uuid
+from typing import Any, Dict, Set
 
 from fastapi import WebSocket, WebSocketDisconnect
 

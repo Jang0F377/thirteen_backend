@@ -1,6 +1,8 @@
 from uuid import UUID, uuid4
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
 from thirteen_backend.models import Base
 
 

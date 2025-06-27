@@ -1,7 +1,7 @@
 import logging
 import os
-from thirteen_backend.config import ENV
 
+from thirteen_backend.config import ENV
 
 if ENV == "test":
     LOGGER = logging.getLogger()

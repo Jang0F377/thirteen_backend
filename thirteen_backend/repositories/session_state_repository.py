@@ -1,8 +1,9 @@
-from uuid import UUID
 import json
+from uuid import UUID
 
 from redis.asyncio import Redis
 from redis.asyncio.client import Pipeline
+
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.domain.player import Player
@@ -215,12 +216,12 @@ async def get_session_state(
         if "hand" in player_dict:
             for card_dict in player_dict["hand"]:
                 cards.append(Card(suit=card_dict["suit"], rank=card_dict["rank"]))
-        
+
         player = Player(
             player_index=player_dict["player"],
             is_bot=player_dict["is_bot"],
             id=player_dict["id"],
-            hand=cards
+            hand=cards,
         )
         players.append(player)
 

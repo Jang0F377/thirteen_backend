@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
 
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.constants import CARD_SUITS, CARD_VALUES

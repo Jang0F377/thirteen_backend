@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional
 from dataclasses import dataclass, field
+from typing import Any, Optional
+
 from fastapi import Request
-from sqlalchemy.ext.asyncio import AsyncSession
 from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AuthorizationContext:

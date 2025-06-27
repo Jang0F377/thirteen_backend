@@ -1,12 +1,12 @@
+from contextlib import asynccontextmanager
+
+import redis.asyncio as aioredis
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import redis.asyncio as aioredis
 
 from thirteen_backend import config
-from thirteen_backend.logger import LOGGER
 from thirteen_backend.api import healthcheck, sessions, websocket
-
+from thirteen_backend.logger import LOGGER
 
 logger = LOGGER
 
