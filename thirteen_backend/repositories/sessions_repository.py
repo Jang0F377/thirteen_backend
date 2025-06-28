@@ -116,7 +116,7 @@ async def create_game_session(
         sequence=0,
         turn=0,
         event_type=GameEventType.INIT,
-        payload=init_game_state.to_dict(),
+        payload=init_game_state.to_full_dict(),
         ts=ts,
         flush_to_db=False,
     )

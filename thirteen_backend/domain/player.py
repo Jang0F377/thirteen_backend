@@ -25,6 +25,8 @@ class Human:
             "hand_count": len(self.hand),
         }
 
+    to_full_dict = to_public_dict
+
 
 @dataclass(slots=True)
 class Bot:

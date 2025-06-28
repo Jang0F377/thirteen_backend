@@ -39,3 +39,10 @@ class Deck:
         for _ in range(cards_per_player):
             for p in players:
                 p.hand.append(self.cards.pop())
+                
+    def to_dict(self) -> dict:
+        return {
+            "times_shuffled": self.cfg.times_shuffled,
+            "deck_count": self.cfg.deck_count,
+            "players_count": self.cfg.players_count,
+        }

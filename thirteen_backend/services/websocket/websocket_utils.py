@@ -14,6 +14,6 @@ def make_state_sync(*, session_id: str, seq: int, game: Game) -> str:
             "turn": game.state.turn_number,
             "ts": datetime.now(timezone.utc).isoformat(),
             "session_id": session_id,
-            "game_state": game.state.to_dict(),
+            "game_state": game.state.to_public_dict(),
         }
     )

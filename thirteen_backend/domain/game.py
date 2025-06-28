@@ -57,18 +57,14 @@ class Game:
         """Return client-facing serialisation (bot hands masked)."""
         return {
             "id": self.id,
-            "cfg": self.cfg.to_dict(),
             "state": self.state.to_public_dict(),
-            "current_turn_order": self.current_turn_order,
         }
 
     def to_full_dict(self) -> dict:
         """Return internal serialisation (includes bot hands)."""
         return {
             "id": self.id,
-            "cfg": self.cfg.to_dict(),
             "state": self.state.to_full_dict(),
-            "current_turn_order": self.current_turn_order,
         }
 
     # ------------------------------------------------------------------
@@ -92,8 +88,9 @@ class Game:
         # ------------------------------------------------------------------
         # Re-build the domain objects encoded in *data*
         # ------------------------------------------------------------------
+        state = data["state"]
         players: list[Human | Bot] = []
-        for player_dict in data["players_state"]:
+        for player_dict in state["players_state"]:
             hand: list[Card] = [
                 Card(suit=c["suit"], rank=c["rank"])
                 for c in player_dict.get("hand", [])
@@ -119,10 +116,10 @@ class Game:
 
         game_state = GameState(
             players_state=players,
-            current_turn_order=data["current_turn_order"],
-            turn_number=data["turn_number"],
-            who_has_power=data["who_has_power"],
-            game_id=data["game_id"],
+            current_turn_order=state["current_turn_order"],
+            turn_number=state["turn_number"],
+            who_has_power=state["who_has_power"],
+            game_id=data["id"],
         )
 
         # ------------------------------------------------------------------
@@ -132,7 +129,7 @@ class Game:
         game.cfg = DeckConfig()
         game.players = players
         game.deck = None  # deck not required post-deal
-        game.current_turn_order = data["current_turn_order"]
+        game.current_turn_order = state["current_turn_order"]
         game.state = game_state
         return game
 
