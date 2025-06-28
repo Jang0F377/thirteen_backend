@@ -1,6 +1,6 @@
 import uuid
 
-from thirteen_backend.utils.json import dumps, loads, ORJSONResponse
+from thirteen_backend.utils.json import ORJSONResponse, dumps, loads
 
 
 def test_dumps_and_loads_roundtrip():

@@ -1,6 +1,6 @@
 from types import SimpleNamespace
-import pytest
 
+import pytest
 
 from thirteen_backend.services.websocket.websocket_manager import WebSocketManager
 

@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 
-from thirteen_backend.logger import LOGGER
 from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game import Game
 from thirteen_backend.errors import Error, ErrorCode
+from thirteen_backend.logger import LOGGER
 from thirteen_backend.models.game_event_model import GameEventType
 from thirteen_backend.models.game_player_model import GamePlayer
 from thirteen_backend.models.game_session_model import GameSession, GameStatus
@@ -50,7 +50,6 @@ async def create_game_session(
         created game and the ``player_id`` representing the *human* player so
         that the caller can authenticate subsequent moves.
     """
-    pipe = context.redis_client.pipeline()
     init_game_state = Game(cfg=cfg)
     session_id = init_game_state.id
     human_player_id: str = ""
@@ -90,7 +89,7 @@ async def create_game_session(
     await context.db_session.flush()
 
     session_set_success = await session_state_repository.set_session_state(
-        pipe=pipe,
+        redis_client=context.redis_client,
         game_id=game_session.id,
         game_state=init_game_state,
     )
@@ -106,7 +105,7 @@ async def create_game_session(
         )
 
     await session_state_repository.initialize_session_sequencer(
-        pipe=pipe,
+        redis_client=context.redis_client,
         game_id=game_session.id,
         sequencer=0,
     )
@@ -123,12 +122,11 @@ async def create_game_session(
     )
 
     await session_state_repository.push_session_event(
-        pipe=pipe,
+        redis_client=context.redis_client,
         game_id=game_session.id,
         event=init_game_event,
     )
 
-    await pipe.execute()
     await context.db_session.commit()
 
     return {"session_id": session_id, "player_id": human_player_id}

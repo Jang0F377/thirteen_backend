@@ -2,7 +2,6 @@ import json
 from uuid import UUID
 
 from redis.asyncio import Redis
-from redis.asyncio.client import Pipeline
 
 # Domain models
 from thirteen_backend.domain.game import Game
@@ -62,7 +61,9 @@ def _make_session_sequencer_key(game_id: UUID) -> str:
     return f"session:{game_id}:seq"
 
 
-async def set_session_state(*, pipe: Pipeline, game_id: UUID, game_state: Game) -> bool:
+async def set_session_state(
+    *, redis_client: Redis, game_id: UUID, game_state: Game
+) -> bool:
     """Persist the current :class:`~thirteen_backend.domain.game_state.Game`
     for the supplied session in Redis.
 
@@ -92,7 +93,7 @@ async def set_session_state(*, pipe: Pipeline, game_id: UUID, game_state: Game) 
     """
     state_key = _make_session_state_key(game_id)
 
-    return await pipe.setex(
+    return await redis_client.setex(
         name=state_key,
         time=60 * 60 * 24,
         value=json.dumps(game_state.to_dict()),
@@ -100,7 +101,7 @@ async def set_session_state(*, pipe: Pipeline, game_id: UUID, game_state: Game) 
 
 
 async def push_session_event(
-    *, pipe: Pipeline, game_id: UUID, event: GameEvent
+    *, redis_client: Redis, game_id: UUID, event: GameEvent
 ) -> None:
     """Append a new game *event* to the Redis list that buffers session events.
 
@@ -115,7 +116,7 @@ async def push_session_event(
         serialize and push onto the list.
     """
     event_key = _make_session_event_key(game_id)
-    await pipe.lpush(
+    await redis_client.lpush(
         event_key,
         json.dumps(event.to_dict()),
     )
@@ -123,7 +124,7 @@ async def push_session_event(
 
 async def increment_session_sequencer(
     *,
-    pipe: Pipeline,
+    redis_client: Redis,
     game_id: UUID,
 ) -> int:
     """Atomically increment the per-session sequence counter.
@@ -143,12 +144,12 @@ async def increment_session_sequencer(
         The *post-increment* value of the sequence counter.
     """
     sequencer_key = _make_session_sequencer_key(game_id)
-    return await pipe.incr(name=sequencer_key)
+    return await redis_client.incr(name=sequencer_key)
 
 
 async def initialize_session_sequencer(
     *,
-    pipe: Pipeline,
+    redis_client: Redis,
     game_id: UUID,
     sequencer: int = 0,
 ) -> bool:
@@ -172,7 +173,7 @@ async def initialize_session_sequencer(
         ``True`` if Redis acknowledged the ``SETEX`` command with ``OK``.
     """
     sequencer_key = _make_session_sequencer_key(game_id)
-    return await pipe.setex(
+    return await redis_client.setex(
         name=sequencer_key,
         time=60 * 60 * 24,
         value=sequencer,
@@ -200,12 +201,12 @@ async def get_session_state(
         The reconstructed game state if present; *None* otherwise.
     """
     state_key = _make_session_state_key(game_id)
-    cached_state = await redis_client.get(name=state_key)
-    if cached_state is None:
+    raw_state = await redis_client.get(name=state_key)
+    if raw_state is None:
         return None
 
     # The state is stored as a JSON string – decode and rebuild the Game.
-    state_dict: dict = json.loads(cached_state)
+    state_dict: dict = json.loads(raw_state)
     return Game.from_state_dict(state_dict)
 
 

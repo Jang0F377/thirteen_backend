@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from thirteen_backend.utils.format_utils import format_uuid_as_str, format_datetime
+from thirteen_backend.utils.format_utils import format_datetime, format_uuid_as_str
 
 
 def test_format_uuid_as_str():

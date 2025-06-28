@@ -1,4 +1,4 @@
-from thirteen_backend.utils.api_responses import format_success, format_error
+from thirteen_backend.utils.api_responses import format_error, format_success
 
 
 def test_format_success_structure():

@@ -1,4 +1,6 @@
-from typing import Literal, Any
+from datetime import datetime
+from typing import Any, Literal
+
 from pydantic import BaseModel
 
 
@@ -15,4 +17,6 @@ class WebSocketMessage(BaseModel):
     type: WebSocketMessageType
     session_id: str
     player_id: str
-    payload: dict[str, Any]
+    last_sequence: int
+    timestamp: datetime
+    payload: list[dict[str, Any]] | None

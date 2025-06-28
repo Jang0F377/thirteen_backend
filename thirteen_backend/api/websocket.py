@@ -1,17 +1,6 @@
-from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket
 
-from thirteen_backend.logger import LOGGER
-from thirteen_backend.exceptions import game_state_not_found
-from thirteen_backend.repositories.session_state_repository import (
-    get_session_sequencer,
-    get_session_state,
-)
-from thirteen_backend.services.websocket.websocket_handlers import (
-    handle_play,
-    handle_pass,
-)
-from thirteen_backend.services.websocket.websocket_manager import websocket_manager
-from thirteen_backend.services.websocket.websocket_utils import make_state_sync
+from thirteen_backend.repositories.websocket_repository import serve
 
 router = APIRouter(
     prefix="/ws",
@@ -20,64 +9,11 @@ router = APIRouter(
 
 
 @router.websocket("/{session_id}/{player_id}")
-async def websocket_endpoint(
-    ws: WebSocket,
-    session_id: str,
-    player_id: str,
-):
-    conn_id = await websocket_manager.connect(session_id=session_id, ws=ws)
-
-    game_state = await get_session_state(
-        redis_client=ws.app.state.redis_client, game_id=session_id
-    )
-    seq = await get_session_sequencer(
-        redis_client=ws.app.state.redis_client, game_id=session_id
-    )
-
-    if game_state is None or seq is None:
-        await ws.close(code=1008, reason="Game state not found")
-        return game_state_not_found(session_id)
-
-    # Send initial state sync event to the client
-    await websocket_manager.send_to(
+async def websocket_endpoint(ws: WebSocket, session_id: str, player_id: str):
+    """Thin wrapper that delegates *all* session handling to the repository."""
+    await serve(
+        redis_client=ws.app.state.redis_client,
+        ws=ws,
         session_id=session_id,
-        conn_id=conn_id,
-        message=make_state_sync(
-            session_id=session_id,
-            seq=seq,
-            game=game_state,
-        ),
+        player_id=player_id,
     )
-
-    while True:
-        try:
-            incoming_message = await ws.receive_json()
-            msg_type = incoming_message["type"]
-            if msg_type == "PLAY":
-                await handle_play(
-                    redis_client=ws.app.state.redis_client,
-                    session_id=session_id,
-                    player_id=player_id,
-                    msg=incoming_message,
-                )
-            elif msg_type == "PASS":
-                await handle_pass(
-                    redis_client=ws.app.state.redis_client,
-                    session_id=session_id,
-                    player_id=player_id,
-                )
-            elif msg_type == "LEAVE":
-                pass
-            elif msg_type == "FINISH":
-                pass
-            else:
-                LOGGER.error(f"Invalid message type: {msg_type}")
-                await ws.close(code=1008, reason="Invalid message type")
-                return
-        except WebSocketDisconnect:
-            websocket_manager.disconnect(session_id=session_id, ws=ws)
-            break
-        except Exception as e:
-            LOGGER.exception(e, exc_info=True)
-            await ws.close(code=1008, reason="Internal server error")
-            return

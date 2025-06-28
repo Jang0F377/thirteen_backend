@@ -1,4 +1,5 @@
 import uuid
+
 from thirteen_backend.domain.deck import Deck, DeckConfig
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.domain.player import Player
@@ -63,9 +64,9 @@ class Game:
         been dealt and play has begun.
         """
         from thirteen_backend.domain.card import Card  # local import to avoid cycles
-        from thirteen_backend.domain.player import Player
-        from thirteen_backend.domain.game_state import GameState
         from thirteen_backend.domain.deck import DeckConfig
+        from thirteen_backend.domain.game_state import GameState
+        from thirteen_backend.domain.player import Player
 
         # ------------------------------------------------------------------
         # Re-build the domain objects encoded in *data*

@@ -1,6 +1,5 @@
-from datetime import datetime, timezone
 import json
-
+from datetime import datetime, timezone
 
 from thirteen_backend.domain.game import Game
 from thirteen_backend.models.game_event_model import GameEventType

@@ -22,7 +22,7 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
     # ------------------------------------------------------------------
     # Connection lifecycle
     # ------------------------------------------------------------------
-    async def connect(self, session_id: str, ws: WebSocket) -> None:
+    async def connect(self, session_id: str, ws: WebSocket) -> str:
         """Accept the WebSocket and register it under *session_id*."""
         await ws.accept()
         conn_id = self._connection_key(ws)

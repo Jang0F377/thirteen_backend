@@ -1,6 +1,6 @@
+import json as _std_json
 import sys
 import types
-import json as _std_json
 
 # ---------------------------------------------------------------------------
 # Stub *orjson* if missing – provide dumps/loads API compatible enough for tests
