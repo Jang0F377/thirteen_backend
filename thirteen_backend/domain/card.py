@@ -55,10 +55,10 @@ class Card:
     def to_dict(self):
         return {
             "rank": self.rank,
-            "rankString": self.rank_name,
+            "rank_string": self.rank_name,
             "suit": self.suit,
-            "suitString": self.suit_name,
-            "fullName": self.full_name,
-            "comparableValue": self.comparable_value,
-            "cardUrl": self.image_code,
+            "suit_string": self.suit_name,
+            "full_name": self.full_name,
+            "comparable_value": self.comparable_value,
+            "card_url": self.image_code,
         }

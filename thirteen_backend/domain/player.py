@@ -15,6 +15,6 @@ class Player:
         return {
             "id": self.id,
             "is_bot": self.is_bot,
-            "player": self.player_index,
+            "player_index": self.player_index,
             "hand": [c.to_dict() for c in self.hand],
         }

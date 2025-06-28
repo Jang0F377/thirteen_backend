@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
 
+from thirteen_backend.logger import LOGGER
 from thirteen_backend.exceptions import game_state_not_found
 from thirteen_backend.repositories.session_state_repository import (
     get_session_sequencer,
     get_session_state,
 )
-from thirteen_backend.services.websocket.websocket_handlers import handle_play, handle_pass
+from thirteen_backend.services.websocket.websocket_handlers import (
+    handle_play,
+    handle_pass,
+)
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
 
@@ -67,12 +71,13 @@ async def websocket_endpoint(
             elif msg_type == "FINISH":
                 pass
             else:
+                LOGGER.error(f"Invalid message type: {msg_type}")
                 await ws.close(code=1008, reason="Invalid message type")
                 return
         except WebSocketDisconnect:
             websocket_manager.disconnect(session_id=session_id, ws=ws)
             break
         except Exception as e:
-            print(e)
+            LOGGER.exception(e, exc_info=True)
             await ws.close(code=1008, reason="Internal server error")
             return

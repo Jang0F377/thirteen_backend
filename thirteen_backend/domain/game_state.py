@@ -14,9 +14,9 @@ class GameState:
 
     def to_dict(self):
         return {
-            "playersState": [p.to_dict() for p in self.players_state],
-            "currentTurnOrder": self.current_turn_order,
-            "turnNumber": self.turn_number,
-            "whoHasPower": self.who_has_power,
-            "gameId": self.game_id,
+            "players_state": [p.to_dict() for p in self.players_state],
+            "current_turn_order": self.current_turn_order,
+            "turn_number": self.turn_number,
+            "who_has_power": self.who_has_power,
+            "game_id": self.game_id,
         }

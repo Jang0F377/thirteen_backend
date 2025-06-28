@@ -71,14 +71,14 @@ class Game:
         # Re-build the domain objects encoded in *data*
         # ------------------------------------------------------------------
         players: list[Player] = []
-        for player_dict in data["playersState"]:
+        for player_dict in data["players_state"]:
             hand: list[Card] = [
                 Card(suit=c["suit"], rank=c["rank"])
                 for c in player_dict.get("hand", [])
             ]
             players.append(
                 Player(
-                    player_index=player_dict["player"],
+                    player_index=player_dict["player_index"],
                     is_bot=player_dict["is_bot"],
                     id=player_dict["id"],
                     hand=hand,
@@ -87,10 +87,10 @@ class Game:
 
         game_state = GameState(
             players_state=players,
-            current_turn_order=data["currentTurnOrder"],
-            turn_number=data["turnNumber"],
-            who_has_power=data["whoHasPower"],
-            game_id=data["gameId"],
+            current_turn_order=data["current_turn_order"],
+            turn_number=data["turn_number"],
+            who_has_power=data["who_has_power"],
+            game_id=data["game_id"],
         )
 
         # ------------------------------------------------------------------
@@ -100,7 +100,7 @@ class Game:
         game.cfg = DeckConfig()
         game.players = players
         game.deck = None  # deck not required post-deal
-        game.current_turn_order = data["currentTurnOrder"]
+        game.current_turn_order = data["current_turn_order"]
         game.state = game_state
         return game
 

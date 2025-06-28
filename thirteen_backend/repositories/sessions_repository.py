@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from thirteen_backend.logger import LOGGER
 from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game import Game
 from thirteen_backend.errors import Error, ErrorCode
@@ -95,6 +96,10 @@ async def create_game_session(
     )
 
     if not session_set_success:
+        LOGGER.error(
+            "Failed to set session state",
+            extra={"session_id": session_id},
+        )
         return Error(
             user_feedback="Failed to set session state",
             error_code=ErrorCode.INTERNAL_SERVER_ERROR,
