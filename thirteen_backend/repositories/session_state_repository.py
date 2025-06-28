@@ -96,7 +96,7 @@ async def set_session_state(
     return await redis_client.setex(
         name=state_key,
         time=60 * 60 * 24,
-        value=json.dumps(game_state.to_dict()),
+        value=json.dumps(game_state.to_full_dict()),
     )
 
 

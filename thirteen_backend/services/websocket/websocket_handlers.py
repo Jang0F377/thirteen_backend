@@ -21,7 +21,7 @@ async def handle_play(
     player_id: str,
     msg: dict[str, Any],
 ) -> None:
-    pass
+    print(f"handle_play: {msg}")
 
 
 async def handle_pass(
@@ -30,7 +30,7 @@ async def handle_pass(
     session_id: str,
     player_id: str,
 ) -> None:
-    pass
+    print(f"handle_pass: {player_id}")
 
 
 async def handle_ready(
@@ -39,7 +39,7 @@ async def handle_ready(
     session_id: str,
     player_id: str,
 ) -> None:
-    pass
+    print(f"handle_ready: {player_id}")
 
 
 async def handle_ping(
@@ -48,7 +48,7 @@ async def handle_ping(
     session_id: str,
     player_id: str,
 ) -> None:
-    pass
+    print(f"handle_ping: {player_id}")
 
 
 async def handle_resync_request(
@@ -58,7 +58,7 @@ async def handle_resync_request(
     player_id: str,
     conn_id: str,
 ) -> None:
-    pass
+    print(f"handle_resync_request: {player_id}/{conn_id}")
 
 
 async def _load_engine(

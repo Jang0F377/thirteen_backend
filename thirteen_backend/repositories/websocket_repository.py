@@ -1,4 +1,3 @@
-from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
 from redis.asyncio import Redis
@@ -18,6 +17,7 @@ from thirteen_backend.services.websocket.websocket_handlers import (
 )
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
+from thirteen_backend.types import WebSocketMessage
 
 
 async def serve(
@@ -62,7 +62,7 @@ async def serve(
     # Main receive → dispatch loop. Runs until the socket is closed.
     while True:
         try:
-            incoming_message: dict[str, Any] = await ws.receive_json()
+            incoming_message: WebSocketMessage = await ws.receive_json()
             msg_type = incoming_message.get("type")
 
             if msg_type == "PLAY":
@@ -98,7 +98,11 @@ async def serve(
                     conn_id=conn_id,
                 )
             else:
-                LOGGER.error("Invalid message type: %s", msg_type)
+                LOGGER.error(
+                    "Invalid message type: %s",
+                    msg_type,
+                    extra={"session_id": session_id, "player_id": player_id},
+                )
                 await ws.close(code=1008, reason="Invalid message type")
                 break
         except WebSocketDisconnect:

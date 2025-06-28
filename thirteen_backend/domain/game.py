@@ -2,7 +2,7 @@ import uuid
 
 from thirteen_backend.domain.deck import Deck, DeckConfig
 from thirteen_backend.domain.game_state import GameState
-from thirteen_backend.domain.player import Player
+from thirteen_backend.domain.player import Bot, Human
 
 
 class Game:
@@ -11,8 +11,13 @@ class Game:
     def __init__(self, cfg: DeckConfig | None = None):
         self.id = str(uuid.uuid4())
         self.cfg = cfg or DeckConfig()
-        self.players: list[Player] = [
-            Player(idx, is_bot=idx != 0) for idx in range(self.cfg.players_count)
+        self.players: list[Human | Bot] = [
+            (
+                Human(player_index=idx, is_bot=False)
+                if idx == 0
+                else Bot(player_index=idx, is_bot=True)
+            )
+            for idx in range(self.cfg.players_count)
         ]
         self.deck = Deck(self.cfg)
         self._deal_cards()
@@ -44,8 +49,27 @@ class Game:
         ]
         return order
 
-    def to_dict(self):
-        return self.state.to_dict()
+    # ------------------------------------------------------------------
+    # Serialisation helpers
+    # ------------------------------------------------------------------
+
+    def to_public_dict(self) -> dict:
+        """Return client-facing serialisation (bot hands masked)."""
+        return {
+            "id": self.id,
+            "cfg": self.cfg.to_dict(),
+            "state": self.state.to_public_dict(),
+            "current_turn_order": self.current_turn_order,
+        }
+
+    def to_full_dict(self) -> dict:
+        """Return internal serialisation (includes bot hands)."""
+        return {
+            "id": self.id,
+            "cfg": self.cfg.to_dict(),
+            "state": self.state.to_full_dict(),
+            "current_turn_order": self.current_turn_order,
+        }
 
     # ------------------------------------------------------------------
     # Reconstruction helpers
@@ -64,27 +88,34 @@ class Game:
         been dealt and play has begun.
         """
         from thirteen_backend.domain.card import Card  # local import to avoid cycles
-        from thirteen_backend.domain.deck import DeckConfig
-        from thirteen_backend.domain.game_state import GameState
-        from thirteen_backend.domain.player import Player
 
         # ------------------------------------------------------------------
         # Re-build the domain objects encoded in *data*
         # ------------------------------------------------------------------
-        players: list[Player] = []
+        players: list[Human | Bot] = []
         for player_dict in data["players_state"]:
             hand: list[Card] = [
                 Card(suit=c["suit"], rank=c["rank"])
                 for c in player_dict.get("hand", [])
             ]
-            players.append(
-                Player(
-                    player_index=player_dict["player_index"],
-                    is_bot=player_dict["is_bot"],
-                    id=player_dict["id"],
-                    hand=hand,
+            if not player_dict["is_bot"]:
+                players.append(
+                    Human(
+                        player_index=player_dict["player_index"],
+                        is_bot=player_dict["is_bot"],
+                        id=player_dict["id"],
+                        hand=hand,
+                    )
                 )
-            )
+            else:
+                players.append(
+                    Bot(
+                        player_index=player_dict["player_index"],
+                        is_bot=player_dict["is_bot"],
+                        id=player_dict["id"],
+                        hand=hand,
+                    )
+                )
 
         game_state = GameState(
             players_state=players,
@@ -110,4 +141,4 @@ class Game:
 if __name__ == "__main__":
     game = Game()
     print(f"Turn order: {game.current_turn_order}")
-    print(game.to_dict())
+    print(game.to_full_dict())

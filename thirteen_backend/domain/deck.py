@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.constants import CARD_SUITS, CARD_VALUES
-from thirteen_backend.domain.player import Player
+from thirteen_backend.domain.player import Human, Bot
 
 
 @dataclass(slots=True)
@@ -33,7 +33,7 @@ class Deck:
         for _ in range(max(1, times)):
             random.shuffle(self.cards)
 
-    def deal(self, players: list[Player]) -> None:
+    def deal(self, players: list[Human | Bot]) -> None:
         """Evenly distribute cards to players."""
         cards_per_player = len(self.cards) // len(players)
         for _ in range(cards_per_player):
