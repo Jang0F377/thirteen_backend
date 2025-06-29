@@ -1,3 +1,4 @@
+from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
 from redis.asyncio import Redis
@@ -17,7 +18,6 @@ from thirteen_backend.services.websocket.websocket_handlers import (
 )
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
-from thirteen_backend.types import WebSocketMessage
 
 
 async def serve(
@@ -62,7 +62,7 @@ async def serve(
     # Main receive → dispatch loop. Runs until the socket is closed.
     while True:
         try:
-            incoming_message: WebSocketMessage = await ws.receive_json()
+            incoming_message: dict[str, Any] = await ws.receive_json()
             msg_type = incoming_message.get("type")
 
             if msg_type == "PLAY":
@@ -90,7 +90,7 @@ async def serve(
                     session_id=session_id,
                     player_id=player_id,
                 )
-            elif msg_type == "RESYNC_REQUEST":
+            elif msg_type == "RESYNC":
                 await handle_resync_request(
                     redis_client=redis_client,
                     session_id=session_id,

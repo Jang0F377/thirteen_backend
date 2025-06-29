@@ -1,7 +1,7 @@
 import uuid
 from dataclasses import dataclass, field
 
-from thirteen_backend.domain.player import Human, Bot
+from thirteen_backend.domain.player import Bot, Human
 
 
 @dataclass(slots=True)
@@ -11,6 +11,9 @@ class GameState:
     turn_number: int
     who_has_power: int | None
     game_id: str
+
+    def increment_turn_number(self) -> None:
+        self.turn_number += 1
 
     # ------------------------------------------------------------------
     # Serialisation helpers

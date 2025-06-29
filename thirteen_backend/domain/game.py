@@ -126,6 +126,7 @@ class Game:
         # Instantiate *Game* without invoking __init__
         # ------------------------------------------------------------------
         game = cls.__new__(cls)  # type: ignore
+        game.id = data["id"]
         game.cfg = DeckConfig()
         game.players = players
         game.deck = None  # deck not required post-deal

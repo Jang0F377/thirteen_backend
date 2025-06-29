@@ -10,7 +10,7 @@ class GameConfig(BaseModel):
     players_count: int
 
 
-WebSocketMessageType = Literal["PLAY", "PASS", "READY", "PING", "RESYNC_REQUEST"]
+WebSocketMessageType = Literal["PLAY", "PASS", "READY", "PING", "RESYNC"]
 
 
 class WebSocketMessage(BaseModel):

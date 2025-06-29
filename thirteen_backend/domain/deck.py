@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.constants import CARD_SUITS, CARD_VALUES
-from thirteen_backend.domain.player import Human, Bot
+from thirteen_backend.domain.player import Bot, Human
 
 
 @dataclass(slots=True)
@@ -39,7 +39,7 @@ class Deck:
         for _ in range(cards_per_player):
             for p in players:
                 p.hand.append(self.cards.pop())
-                
+
     def to_dict(self) -> dict:
         return {
             "times_shuffled": self.cfg.times_shuffled,
