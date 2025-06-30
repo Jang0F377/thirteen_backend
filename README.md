@@ -69,6 +69,16 @@ A bomb is not unbeatable, but once played it becomes the type that must be beat 
 
 > This was the way I was taught, I like the fact that you must strategize as to when you want to use your bombs. You can waste them on spite or to take control of a pile to further your plans. But they do not have to be played only on **2**s.
 
+### Ending the Game
+
+As players play their last cards, they drop out of play. If the leader to a new pile has no cards remaining, the lead passes to the next active player to the left. The game ends when only one player is left with any cards. That player is the loser.
+
+### Variants
+
+To be supported at a later time...  
+2-4 may play, being dealt 13 cards each; alternatively 3 players may be dealt 17 cards each.  
+5-8 may play using a double deck of 104 cards. Either dealt out 13 each, or as many cards to each player as may be done equally.
+
 ---
 
 ## Table of contents
@@ -81,6 +91,8 @@ A bomb is not unbeatable, but once played it becomes the type that must be beat 
       - [Valid Card Plays](#valid-card-plays)
       - [Following](#following)
       - [Bombs](#bombs)
+    - [Ending the Game](#ending-the-game)
+    - [Variants](#variants)
   - [Table of contents](#table-of-contents)
   - [Features](#features)
   - [Tech stack](#tech-stack)
