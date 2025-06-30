@@ -7,9 +7,80 @@ The project follows a clean, domain-driven architecture and relies on **PostgreS
 
 ---
 
+## Rules of the Game
+
+This game is a shedding-type card game, where the players try to be the first to get rid of all their cards. This game originates from Vietnam and has many different variants. I aim to support these different variant types of game modes, but the first one I will support is the one I was taught.
+
+### Core Rules
+
+This deals with a standard 52 card deck dealt 13 cards between 4 or 17 between 3.  
+**Cards rank**(from low to high): **3 4 5 6 7 8 9 10 J Q K A 2**  
+**Suits rank**(from low to high): **Diamonds Clubs Hearts Spades**  
+2 of Spades being the highest single card, 3 of Diamonds being the lowest.
+Players in turn discard single cards or card combinations to a central face-up discard pile.  
+The object is to avoid being the last player holding any cards.
+
+### Outplay
+
+#### Leading
+
+For the first hand, the player holding the 3 of Diamonds will begin. They will be 'leading' (I will also refer to as 'in control').  
+They may begin by playing any valid card combination as long as the 3 of Diamonds is included.  
+In subsequent hands, the winner of the previous hand begins and may play any card or combination.
+
+#### Valid Card Plays
+
+Valid card combinations that may be led are:
+
+- A **single** card - 3&#9830;
+- A **pair** of same rank - 4&#9830;/4&#9824;
+- A **triplets** of same rank - 3&#9830;/3&#9827;/3&#9829;
+- A **sequence** of 3 or more cards, regardless of suit - 9&#9827;/10&#9830;/J&#9829;/Q&#9824;
+- A **bomb**(more on these below):
+  - **Double sequence** of 3 or more pairs - 4&#9827;/4&#9830;/5&#9829;/5&#9824;/6&#9827;/6&#9830;
+  - **Quartet** of same rank - A&#9827;/A&#9830;/A&#9829;/A&#9824;
+
+> Sequences may not "go around the corner". So while K&#9830;/A&#9829;/2&#9824; is a valid sequence, K&#9830;/A&#9829;/2&#9824;/3&#9824; is NOT.
+
+#### Following
+
+Each player in turn may either play or pass.  
+Passing and playing continues until theres is a card/combination that no one can beat. When the winning card/combination has been determined, that discard pile is set aside and a new pile is started for the new lead.
+
+- To play, the player must contribute a card or combination to the pile that matches the type (single, pair, sequence, etc) of the previous played but _beats_ it in rank. The highest-ranking card of each combination determines which beats which. Thus if a sequence of 9&#9827;/10&#9830;/J&#9829; it can be beaten by 9&#9830;/10&#9827;/J&#9824; because the highest card of the second sequence (Jack of Spades) outranks the highest card of the first sequence (Jack of Hearts). Naturally it would also be beaten by any **10 J Q** or higher sequence.
+- A player passes when they have no card/combination to beat the previous played in rank. Once a player passes, they may not play again to this pile and must wait until a new lead is started.
+
+#### Bombs
+
+The exceptions to the strict rule of _matching type_ and _beating rank_ are called **bombs**. The original rules state that **bombs** may be played "only against presently winning **2**s." But I was taught that these were free to be played against any presently winning card/combination as follows:
+
+- **Double sequence of 3+ pairs**
+  - Can beat any single card
+  - Ex: 4&#9827;/4&#9830;/5&#9829;/5&#9824;/6&#9827;/6&#9830;
+- **Quartet**
+  - Ultimate bomb
+  - Can beat anything - including double sequence
+  - Can only be beat by a quartet of a higher rank.
+  - Ex: 4&#9827;/4&#9830;/4&#9829;/4&#9824;
+
+<br/>
+
+A bomb is not unbeatable, but once played it becomes the type that must be beat rather than that of the card or combination originally led.
+
+> This was the way I was taught, I like the fact that you must strategize as to when you want to use your bombs. You can waste them on spite or to take control of a pile to further your plans. But they do not have to be played only on **2**s.
+
+---
+
 ## Table of contents
 
 - [Thirteen Backend](#thirteen-backend)
+  - [Rules of the Game](#rules-of-the-game)
+    - [Core Rules](#core-rules)
+    - [Outplay](#outplay)
+      - [Leading](#leading)
+      - [Valid Card Plays](#valid-card-plays)
+      - [Following](#following)
+      - [Bombs](#bombs)
   - [Table of contents](#table-of-contents)
   - [Features](#features)
   - [Tech stack](#tech-stack)

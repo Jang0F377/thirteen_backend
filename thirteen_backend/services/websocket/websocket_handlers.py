@@ -30,11 +30,11 @@ async def handle_play(
     choices = msg["payload"]
 
     engine, _ = await _load_engine(redis_client=redis_client, session_id=session_id)
-    
+
     # TODO: Add validation/removal logic for choices here
-    
+
     engine.state.increment_turn_number()
-    
+
     await _save_engine(redis_client=redis_client, session_id=session_id, engine=engine)
 
 

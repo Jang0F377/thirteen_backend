@@ -1,5 +1,6 @@
 import uuid
 
+from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.deck import Deck, DeckConfig
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.domain.player import Bot, Human
@@ -75,16 +76,13 @@ class Game:
     def from_state_dict(cls, data: dict) -> "Game":
         """Rebuild a *Game* instance from the cached state dictionary.
 
-        This helper bypasses the normal constructor – which shuffles a fresh
-        deck and deals cards – and instead recreates the *exact* state that
-        was previously serialised and cached in Redis. Only the attributes
-        required by the websocket layer (namely ``players``, ``state`` and
-        ``current_turn_order``) are reinstated. The deck itself is **not**
-        reconstructed because it is not needed once the initial hands have
-        been dealt and play has begun.
+        This helper bypasses the normal constructor and instead recreates
+        the *exact* state that was previously serialised and cached in Redis. 
+        Only the attributes required by the websocket layer (namely 
+        ``players``, ``state`` and ``current_turn_order``) are reinstated. 
+        The deck itself is **not** reconstructed because it is not needed 
+        once the initial hands have been dealt and play has begun.
         """
-        from thirteen_backend.domain.card import Card  # local import to avoid cycles
-
         # ------------------------------------------------------------------
         # Re-build the domain objects encoded in *data*
         # ------------------------------------------------------------------
