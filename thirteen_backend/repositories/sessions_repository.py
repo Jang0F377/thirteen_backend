@@ -12,6 +12,7 @@ from thirteen_backend.repositories import (
     game_event_repository,
     session_state_repository,
 )
+from thirteen_backend.services.bot.bot_handlers import play_bots_until_human
 from thirteen_backend.types import GameConfig
 
 
@@ -52,6 +53,7 @@ async def create_game_session(
     """
     init_game_state = Game(cfg=cfg)
     session_id = init_game_state.id
+    init_sequence = 0
     human_player_id: str = ""
     ts = datetime.now(timezone.utc)
 
@@ -107,7 +109,7 @@ async def create_game_session(
     await session_state_repository.initialize_session_sequencer(
         redis_client=context.redis_client,
         game_id=game_session.id,
-        sequencer=0,
+        sequencer=init_sequence,
     )
 
     init_game_event = await game_event_repository.create_game_event(
@@ -128,5 +130,13 @@ async def create_game_session(
     )
 
     await context.db_session.commit()
+    
+    if init_game_state.players[init_game_state.state.current_leader].is_bot:
+        
+        await play_bots_until_human(
+            redis_client=context.redis_client,
+            engine=init_game_state,
+            seq=init_sequence,
+        )
 
     return {"session_id": session_id, "player_id": human_player_id}
