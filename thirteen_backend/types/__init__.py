@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import Any, Literal
 
 from pydantic import BaseModel
@@ -20,3 +21,13 @@ class WebSocketMessage(BaseModel):
     last_sequence: int
     timestamp: datetime
     payload: list[dict[str, Any]] | None
+
+
+class PlayType(StrEnum):
+    OPEN = "open"
+    SINGLE = "single"
+    PAIR = "pair"
+    TRIPLET = "triplet"
+    SEQUENCE = "sequence"
+    DOUBLE_SEQUENCE = "double_sequence"
+    QUARTET = "quartet"

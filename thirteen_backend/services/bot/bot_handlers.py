@@ -1,4 +1,5 @@
 import asyncio
+
 from redis.asyncio import Redis
 
 from thirteen_backend.domain.game import Game

@@ -27,7 +27,7 @@ class Game:
             players_state=self.players,
             current_turn_order=self.current_turn_order,
             turn_number=1,
-            who_has_power=self.current_turn_order[0],
+            current_leader=self.current_turn_order[0],
             game_id=self.id,
         )
 
@@ -77,10 +77,10 @@ class Game:
         """Rebuild a *Game* instance from the cached state dictionary.
 
         This helper bypasses the normal constructor and instead recreates
-        the *exact* state that was previously serialised and cached in Redis. 
-        Only the attributes required by the websocket layer (namely 
-        ``players``, ``state`` and ``current_turn_order``) are reinstated. 
-        The deck itself is **not** reconstructed because it is not needed 
+        the *exact* state that was previously serialised and cached in Redis.
+        Only the attributes required by the websocket layer (namely
+        ``players``, ``state`` and ``current_turn_order``) are reinstated.
+        The deck itself is **not** reconstructed because it is not needed
         once the initial hands have been dealt and play has begun.
         """
         # ------------------------------------------------------------------
@@ -116,7 +116,14 @@ class Game:
             players_state=players,
             current_turn_order=state["current_turn_order"],
             turn_number=state["turn_number"],
-            who_has_power=state["who_has_power"],
+            current_leader=state["current_leader"],
+            hand_number=state["hand_number"],
+            current_play_pile=[
+                Card(suit=c["suit"], rank=c["rank"]) for c in state["current_play_pile"]
+            ],
+            current_play_type=state["current_play_type"],
+            passed_players=state["passed_players"],
+            placements_this_hand=state["placements_this_hand"],
             game_id=data["id"],
         )
 
