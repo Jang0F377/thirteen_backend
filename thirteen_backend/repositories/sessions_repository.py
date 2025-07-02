@@ -130,9 +130,9 @@ async def create_game_session(
     )
 
     await context.db_session.commit()
-    
+
     if init_game_state.players[init_game_state.state.current_leader].is_bot:
-        
+
         await play_bots_until_human(
             redis_client=context.redis_client,
             engine=init_game_state,

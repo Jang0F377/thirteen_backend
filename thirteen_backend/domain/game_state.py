@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.player import Bot, Human
-from thirteen_backend.types import PlayType
+from thirteen_backend.types import PlayType, Play
 
 
 @dataclass(slots=True)
@@ -21,6 +21,7 @@ class GameState:
     placements_this_hand: list[int] = field(
         default_factory=list
     )  # seat idx of players who have finished this hand
+    last_play: Play | None = None
 
     def increment_turn_number(self) -> None:
         self.turn_number += 1
@@ -42,6 +43,7 @@ class GameState:
             "current_play_type": self.current_play_type,
             "passed_players": self.passed_players,
             "placements_this_hand": self.placements_this_hand,
+            "last_play": self.last_play,
         }
 
     def to_full_dict(self) -> dict:
@@ -57,4 +59,5 @@ class GameState:
             "current_play_type": self.current_play_type,
             "passed_players": self.passed_players,
             "placements_this_hand": self.placements_this_hand,
+            "last_play": self.last_play,
         }

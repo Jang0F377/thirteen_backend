@@ -1,8 +1,10 @@
 from datetime import datetime
 from enum import StrEnum
-from typing import Any, Literal
+from typing import Any, Literal, TypedDict
 
 from pydantic import BaseModel
+
+from thirteen_backend.domain.card import Card
 
 
 class GameConfig(BaseModel):
@@ -31,3 +33,8 @@ class PlayType(StrEnum):
     SEQUENCE = "sequence"
     DOUBLE_SEQUENCE = "double_sequence"
     QUARTET = "quartet"
+
+
+class Play(TypedDict):
+    cards: list[Card]
+    play_type: PlayType

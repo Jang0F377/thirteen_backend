@@ -21,19 +21,21 @@ async def play_bots_until_human(
             "current_leader": engine.state.current_leader,
         },
     )
-    while True:
-        next_seat = engine.state.current_turn_order[
-            engine.state.turn_number % engine.cfg.players_count
-        ]
-        print(f"next_seat: {next_seat}")
-        next_player = engine.players[next_seat]
-        print(f"next_player: {next_player}")
-        if next_player.is_bot:
-            choices = await _choose_bot_move(engine=engine, bot_idx=next_seat)
-        else:
-            return seq
+    # while True:
+    next_seat = engine.state.current_turn_order[
+        engine.state.turn_number % engine.cfg.players_count
+    ]
+    next_player = engine.players[next_seat]
+    print(f"next_seat: {next_seat}")
+    print(f"next_player: {next_player}")
+    if next_player.is_bot:
+        choices = await _choose_bot_move(engine=engine, bot_idx=next_seat)
+        print(f"choices: {choices}")
+    else:
+        print("human", seq)
+        return seq
 
-        asyncio.sleep(0.5)
+    # asyncio.sleep(0.5)
 
 
 async def _choose_bot_move(*, engine: Game, bot_idx: int) -> list[dict]:
