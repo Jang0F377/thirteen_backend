@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from thirteen_backend.logger import LOGGER
 from thirteen_backend.domain.card import Card
-from thirteen_backend.domain.game import Game
+
+if TYPE_CHECKING:
+    from thirteen_backend.domain.game import Game
+
 from thirteen_backend.types import Play, PlayType
 
 
@@ -43,3 +50,9 @@ class Rules:
         if current_play_type == PlayType.SEQUENCE:
             LOGGER.info("SEQUENCE")
             pass
+        
+    def weigh_plays(
+        self,
+        plays: list[Play],
+        
+    )

@@ -4,6 +4,7 @@ from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.deck import Deck, DeckConfig
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.domain.player import Bot, Human
+from thirteen_backend.domain.rules import Rules
 
 
 class Game:
@@ -30,6 +31,7 @@ class Game:
             current_leader=self.current_turn_order[0],
             game_id=self.id,
         )
+        self.rules = Rules(engine=self)
 
     def _deal_cards(self) -> None:
         self.deck.deal(self.players)

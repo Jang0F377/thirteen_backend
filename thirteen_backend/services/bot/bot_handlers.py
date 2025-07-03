@@ -4,6 +4,7 @@ from redis.asyncio import Redis
 
 from thirteen_backend.logger import LOGGER
 from thirteen_backend.domain.game import Game
+from thirteen_backend.types import PlayType, Play
 
 
 async def play_bots_until_human(
@@ -22,15 +23,15 @@ async def play_bots_until_human(
         },
     )
     # while True:
-    next_seat = engine.state.current_turn_order[
-        engine.state.turn_number % engine.cfg.players_count
+    current_seat = engine.state.current_turn_order[
+        (engine.state.turn_number - 1) % engine.cfg.players_count  # -1 because turn_number is 1-indexed
     ]
-    next_player = engine.players[next_seat]
-    print(f"next_seat: {next_seat}")
-    print(f"next_player: {next_player}")
-    if next_player.is_bot:
-        choices = await _choose_bot_move(engine=engine, bot_idx=next_seat)
-        print(f"choices: {choices}")
+    current_player = engine.players[current_seat]
+    if current_player.is_bot:
+        valid_plays = engine.rules.get_valid_plays(player_idx=current_seat)
+        print(f"valid_plays: {valid_plays}")
+        # choices = await _choose_bot_move(engine=engine, bot_idx=next_seat)
+        # print(f"choices: {choices}")
     else:
         print("human", seq)
         return seq
