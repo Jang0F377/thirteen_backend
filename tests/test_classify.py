@@ -73,4 +73,4 @@ def test_classify_double_sequence():
 
 def test_classify_invalid_returns_none():
     """Mixed rank pair should not be classified."""
-    assert classify(_make_cards([("3", "D"), ("4", "D")])) is None 
+    assert classify(_make_cards([("3", "D"), ("4", "D")])) is None

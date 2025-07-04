@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import combinations
 from typing import TYPE_CHECKING
 
 from thirteen_backend.domain.card import Card
@@ -33,17 +34,70 @@ class Rules:
         ):
             return None
 
-        if play_type == PlayType.OPEN:
-            return [Play(cards=hand, play_type=play_type)]
-
-        valid_plays = []
-
-        return valid_plays
+        return self._make_valid_plays(hand=hand, current_play_type=play_type)
 
     def _make_valid_plays(
         self, hand: list[Card], current_play_type: PlayType
     ) -> list[Play]:
-        pass
+        plays = []
+        if current_play_type == PlayType.SINGLE:
+            plays = [Play(cards=[c], play_type=PlayType.SINGLE) for c in hand]
+        elif current_play_type == PlayType.PAIR:
+            plays = [
+                Play(cards=pair, play_type=PlayType.PAIR)
+                for pair in self._determine_pairs(hand=hand)
+            ]
+        elif current_play_type == PlayType.TRIPLET:
+            plays = [
+                Play(cards=triplet, play_type=PlayType.TRIPLET)
+                for triplet in self._determine_triplets(hand=hand)
+            ]
+        elif current_play_type == PlayType.OPEN:
+            plays = self._determine_open(hand=hand)
+
+        return plays
+    
+    def _determine_open(self, hand: list[Card]) -> list[Play]:
+        plays = []
+        singles = [Play(cards=[c], play_type=PlayType.SINGLE) for c in hand]
+        pairs = [
+            Play(cards=pair, play_type=PlayType.PAIR)
+            for pair in self._determine_pairs(hand=hand)
+        ]
+        triplets = [
+            Play(cards=triplet, play_type=PlayType.TRIPLET)
+            for triplet in self._determine_triplets(hand=hand)
+        ]
+        plays.extend(singles)
+        plays.extend(pairs)
+        plays.extend(triplets)
+        return plays
+
+    def _determine_triplets(self, hand: list[Card]) -> list[list[Card]]:
+        """Return every unique combination of 3 cards sharing the same rank."""
+        by_rank: dict[str, list[Card]] = {}
+        for c in hand:
+            by_rank.setdefault(c.rank, []).append(c)
+
+        triplets: list[list[Card]] = []
+        for cards in by_rank.values():
+            if len(cards) >= 3:
+                for combo in combinations(cards, 3):
+                    triplets.append(list(combo))
+        return triplets
+
+    def _determine_pairs(self, hand: list[Card]) -> list[list[Card]]:
+        """Return every unique combination of 2 cards sharing the same rank."""
+        by_rank: dict[str, list[Card]] = {}
+        for c in hand:
+            by_rank.setdefault(c.rank, []).append(c)
+
+        pairs: list[list[Card]] = []
+        for cards in by_rank.values():
+            if len(cards) >= 2:
+                for combo in combinations(cards, 2):
+                    pairs.append(list(combo))
+        return pairs
 
     def _can_play(
         self,
