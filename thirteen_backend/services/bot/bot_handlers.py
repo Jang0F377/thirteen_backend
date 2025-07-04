@@ -2,9 +2,14 @@ import asyncio
 
 from redis.asyncio import Redis
 
-from thirteen_backend.logger import LOGGER
+from thirteen_backend.domain.classify import classify
 from thirteen_backend.domain.game import Game
-from thirteen_backend.types import PlayType, Play
+from thirteen_backend.logger import LOGGER
+from thirteen_backend.types import Play, PlayType
+
+
+class WeightedPlay(Play):
+    strength: int
 
 
 async def play_bots_until_human(
@@ -24,14 +29,16 @@ async def play_bots_until_human(
     )
     # while True:
     current_seat = engine.state.current_turn_order[
-        (engine.state.turn_number - 1) % engine.cfg.players_count  # -1 because turn_number is 1-indexed
+        (engine.state.turn_number - 1)
+        % engine.cfg.players_count  # -1 because turn_number is 1-indexed
     ]
     current_player = engine.players[current_seat]
     if current_player.is_bot:
-        valid_plays = engine.rules.get_valid_plays(player_idx=current_seat)
-        print(f"valid_plays: {valid_plays}")
-        # choices = await _choose_bot_move(engine=engine, bot_idx=next_seat)
-        # print(f"choices: {choices}")
+        bot_move = await _choose_bot_move(engine=engine, bot_idx=current_seat)
+        if not bot_move:
+            LOGGER.debug("Bot decides to pass")
+        else:
+            LOGGER.debug(f"Bot plays: {bot_move}")
     else:
         print("human", seq)
         return seq
@@ -40,4 +47,38 @@ async def play_bots_until_human(
 
 
 async def _choose_bot_move(*, engine: Game, bot_idx: int) -> list[dict]:
-    pass
+    valid_plays = engine.rules.get_valid_plays(player_idx=bot_idx)
+    if not valid_plays:
+        return []
+
+    weighted_plays = await _weigh_plays(valid_plays=valid_plays)
+    if not weighted_plays:
+        return []
+
+    print(f"weighted_plays: {weighted_plays}")
+
+    temp_best_play = weighted_plays[0]
+    return [c.to_dict() for c in temp_best_play["cards"]]
+
+
+async def _weigh_plays(
+    *,
+    valid_plays: list[Play],
+) -> list[WeightedPlay]:
+    weighted_plays: list[WeightedPlay] = []
+
+    for play in valid_plays:
+        res = classify(play["cards"])
+        if res is None:
+            continue
+        _ptype, strength = res
+        weighted_plays.append(
+            WeightedPlay(
+                cards=play["cards"],
+                play_type=_ptype,
+                strength=strength,
+            )
+        )
+
+    weighted_plays.sort(key=lambda p: p["strength"], reverse=True)
+    return weighted_plays

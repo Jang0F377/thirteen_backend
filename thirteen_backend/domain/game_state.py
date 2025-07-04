@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.player import Bot, Human
-from thirteen_backend.types import PlayType, Play
+from thirteen_backend.types import Play, PlayType
 
 
 @dataclass(slots=True)
