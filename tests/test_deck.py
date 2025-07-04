@@ -6,7 +6,7 @@ except ModuleNotFoundError:  # pragma: no cover
     pytest = types.SimpleNamespace(mark=types.SimpleNamespace(asyncio=(lambda f: f)))  # type: ignore
 
 from thirteen_backend.domain.deck import Deck, DeckConfig
-from thirteen_backend.domain.player import Player
+from thirteen_backend.domain.player import Human
 
 
 def _card_signature(card):
@@ -43,7 +43,7 @@ def test_deal_evenly_divides_cards():
     cfg = DeckConfig()
     deck = Deck(cfg)
 
-    players = [Player(player_index=i, is_bot=False) for i in range(cfg.players_count)]
+    players = [Human(player_index=i, is_bot=False) for i in range(cfg.players_count)]
     deck.deal(players)
 
     cards_per_player = 52 // cfg.players_count

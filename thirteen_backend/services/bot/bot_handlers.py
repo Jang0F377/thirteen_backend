@@ -51,6 +51,7 @@ async def _choose_bot_move(*, engine: Game, bot_idx: int) -> list[dict]:
     if not valid_plays:
         return []
 
+    print(f"valid_plays: {valid_plays}")
     weighted_plays = await _weigh_plays(valid_plays=valid_plays)
     if not weighted_plays:
         return []

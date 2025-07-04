@@ -32,9 +32,18 @@ class Rules:
             last_play=last_play,
         ):
             return None
+
+        if play_type == PlayType.OPEN:
+            return [Play(cards=hand, play_type=play_type)]
+
         valid_plays = []
 
         return valid_plays
+
+    def _make_valid_plays(
+        self, hand: list[Card], current_play_type: PlayType
+    ) -> list[Play]:
+        pass
 
     def _can_play(
         self,

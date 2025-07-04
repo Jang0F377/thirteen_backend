@@ -1,6 +1,9 @@
 import json as _std_json
+import os
 import sys
 import types
+
+os.environ["ENV"] = "test"
 
 # ---------------------------------------------------------------------------
 # Stub *orjson* if missing – provide dumps/loads API compatible enough for tests

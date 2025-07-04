@@ -28,13 +28,13 @@ def test_game_initialisation_default():
     )
     assert game.current_turn_order[0] == owner_index
 
-    # to_dict returns same as state.to_dict
-    assert game.to_dict() == game.state.to_dict()
+    # to_full_dict serialises current state accurately
+    assert game.to_full_dict()["state"] == game.state.to_full_dict()
 
 
 def test_game_serialisation_roundtrip():
     original = Game()
-    state_dict = original.to_dict()
+    state_dict = original.to_full_dict()
 
     # Build a new Game from cached state
     restored = Game.from_state_dict(state_dict)
