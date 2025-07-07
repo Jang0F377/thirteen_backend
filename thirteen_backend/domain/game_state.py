@@ -22,9 +22,62 @@ class GameState:
         default_factory=list
     )  # seat idx of players who have finished this hand
     last_play: Play | None = None
-
+    
+    def set_last_play(self, play: Play) -> None:
+        self.last_play = play
+        
+    def set_current_play_type(self, play_type: PlayType) -> None:
+        self.current_play_type = play_type
+        
+    def set_current_play_pile(self, cards: list[Card]) -> None:
+        self.current_play_pile.extend(cards)
+        
     def increment_turn_number(self) -> None:
         self.turn_number += 1
+        
+    def set_current_leader(self, player_idx: int) -> None:
+        self.current_leader = player_idx
+        
+    def add_passed_player(self, player_idx: int) -> None:
+        self.passed_players.append(player_idx)
+        
+    def add_placement(self, player_idx: int) -> None:
+        self.placements_this_hand.append(player_idx)
+        
+    def reset_passed_players(self) -> None:
+        self.passed_players = []
+        
+    def reset_current_leader(self) -> None:
+        self.current_leader = None
+        
+    def reset_placements(self) -> None:
+        self.placements_this_hand = []
+        
+    def reset_current_play_pile(self) -> None:
+        self.current_play_pile = []
+        
+    def reset_current_play_type(self) -> None:
+        self.current_play_type = PlayType.OPEN
+        
+    def reset_last_play(self) -> None:
+        self.last_play = None
+        
+    def handle_new_lead(self, player_idx: int) -> None:
+        self.set_current_leader(player_idx)
+        self.reset_passed_players()
+        self.reset_current_play_pile()
+        self.reset_current_play_type()
+        return None
+    
+    def handle_new_hand(self) -> None:
+        self.hand_number += 1
+        self.reset_passed_players()
+        self.reset_placements()
+        self.reset_current_play_pile()
+        self.reset_current_play_type()
+        self.reset_last_play()
+        self.reset_current_leader()
+        return None
 
     # ------------------------------------------------------------------
     # Serialisation helpers

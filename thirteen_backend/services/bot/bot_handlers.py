@@ -27,26 +27,28 @@ async def play_bots_until_human(
             "current_leader": engine.state.current_leader,
         },
     )
-    # while True:
-    current_seat = engine.state.current_turn_order[
-        (engine.state.turn_number - 1)
-        % engine.cfg.players_count  # -1 because turn_number is 1-indexed
-    ]
-    current_player = engine.players[current_seat]
-    if current_player.is_bot:
-        bot_move = await _choose_bot_move(engine=engine, bot_idx=current_seat)
-        if not bot_move:
-            print("Bot decides to pass")
+    while True:
+        current_seat = engine.state.current_turn_order[
+            (engine.state.turn_number - 1)
+            % engine.cfg.players_count  # -1 because turn_number is 1-indexed
+        ]
+        current_player = engine.players[current_seat]
+        if current_player.is_bot:
+            bot_move = await _choose_bot_move(engine=engine, bot_idx=current_seat)
+            if not bot_move:
+                print("Bot decides to pass")
+                engine.apply_pass(player_idx=current_seat)
+            else:
+                print(f"Bot plays: {bot_move}")
+                engine.apply_play(player_idx=current_seat, play=bot_move)
         else:
-            print(f"Bot plays: {bot_move}")
-    else:
-        print("human", seq)
-        return seq
+            print("human", seq)
+            return seq
 
-    # asyncio.sleep(0.5)
+        await asyncio.sleep(0.5)
 
 
-async def _choose_bot_move(*, engine: Game, bot_idx: int) -> list[dict]:
+async def _choose_bot_move(*, engine: Game, bot_idx: int) -> Play:
     valid_plays = engine.rules.get_valid_plays(player_idx=bot_idx)
     if not valid_plays:
         return []
@@ -59,7 +61,7 @@ async def _choose_bot_move(*, engine: Game, bot_idx: int) -> list[dict]:
     print(f"weighted_plays: {weighted_plays}")
 
     temp_best_play = weighted_plays[0]
-    return [c.to_dict() for c in temp_best_play["cards"]]
+    return temp_best_play
 
 
 async def _weigh_plays(

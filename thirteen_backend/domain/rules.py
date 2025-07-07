@@ -265,7 +265,7 @@ class Rules:
             return len(hand) >= 3
         if current_play_type == PlayType.SEQUENCE:
             if last_play is not None:
-                return len(hand) >= len(last_play.cards)
+                return len(hand) >= len(last_play["cards"])
             return False
         if current_play_type == PlayType.DOUBLE_SEQUENCE:
             pass

@@ -53,9 +53,20 @@ class Game:
         ]
         return order
     
+    def apply_pass(self, player_idx: int) -> None:
+        self.state.add_passed_player(player_idx)
+        self.state.increment_turn_number()
+        return None
+    
     
     def apply_play(self, player_idx: int, play: Play) -> None:
+        print(f"Applying play: {play}\nFor player: {player_idx}")
+        self.state.set_current_play_pile(play["cards"])
+        self.state.set_current_play_type(play["play_type"])
+        self.state.set_last_play(play)
+        self.state.increment_turn_number()
         return None
+        
 
     # ------------------------------------------------------------------
     # Serialisation helpers
