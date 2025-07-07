@@ -39,19 +39,19 @@ def _classify_single(cards: list[Card]) -> tuple[PlayType, int] | None:
 
 def _classify_pair(cards: list[Card]) -> tuple[PlayType, int] | None:
     if len(cards) == 2 and cards[0].rank == cards[1].rank:
-        return PlayType.PAIR, max(_card_strength(c) for c in cards)
+        return PlayType.PAIR, sum(_card_strength(c) for c in cards)
     return None
 
 
 def _classify_triplet(cards: list[Card]) -> tuple[PlayType, int] | None:
     if len(cards) == 3 and len({c.rank for c in cards}) == 1:
-        return PlayType.TRIPLET, max(_card_strength(c) for c in cards)
+        return PlayType.TRIPLET, sum(_card_strength(c) for c in cards)
     return None
 
 
 def _classify_quartet(cards: list[Card]) -> tuple[PlayType, int] | None:
     if len(cards) == 4 and len({c.rank for c in cards}) == 1:
-        return PlayType.QUARTET, max(_card_strength(c) for c in cards)
+        return PlayType.QUARTET, sum(_card_strength(c) for c in cards)
     return None
 
 
@@ -63,7 +63,7 @@ def _classify_sequence(cards: list[Card]) -> tuple[PlayType, int] | None:
     ranks = [c.rank for c in by_rank]
     idxs = [RANK_ORDER.index(r) for r in ranks]
     if all(b - a == 1 for a, b in zip(idxs, idxs[1:])):
-        return PlayType.SEQUENCE, max(_card_strength(c) for c in by_rank)
+        return PlayType.SEQUENCE, sum(_card_strength(c) for c in by_rank)
     return None
 
 
@@ -82,7 +82,7 @@ def _classify_double_sequence(cards: list[Card]) -> tuple[PlayType, int] | None:
     idxs = [RANK_ORDER.index(r) for r in sorted_ranks]
     if all(b - a == 1 for a, b in zip(idxs, idxs[1:])):
         flat_cards = [c for pair in sorted_ranks for c in by_rank[pair]]
-        return PlayType.DOUBLE_SEQUENCE, max(_card_strength(c) for c in flat_cards)
+        return PlayType.DOUBLE_SEQUENCE, sum(_card_strength(c) for c in flat_cards)
     return None
 
 

@@ -5,6 +5,7 @@ from thirteen_backend.domain.deck import Deck, DeckConfig
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.domain.player import Bot, Human
 from thirteen_backend.domain.rules import Rules
+from thirteen_backend.types import Play
 
 
 class Game:
@@ -51,6 +52,10 @@ class Game:
             for i in range(self.cfg.players_count)
         ]
         return order
+    
+    
+    def apply_play(self, player_idx: int, play: Play) -> None:
+        return None
 
     # ------------------------------------------------------------------
     # Serialisation helpers

@@ -36,9 +36,9 @@ async def play_bots_until_human(
     if current_player.is_bot:
         bot_move = await _choose_bot_move(engine=engine, bot_idx=current_seat)
         if not bot_move:
-            LOGGER.debug("Bot decides to pass")
+            print("Bot decides to pass")
         else:
-            LOGGER.debug(f"Bot plays: {bot_move}")
+            print(f"Bot plays: {bot_move}")
     else:
         print("human", seq)
         return seq
