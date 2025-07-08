@@ -39,6 +39,7 @@ class Rules:
             hand=hand,
             current_play_type=play_type,
             turn_number=self.engine.state.turn_number,
+            last_play=last_play,
         )
 
     def _make_valid_plays(
@@ -46,6 +47,7 @@ class Rules:
         hand: list[Card],
         current_play_type: PlayType,
         turn_number: int,
+        last_play: Play | None,
     ) -> list[Play]:
         plays = []
         if current_play_type == PlayType.SINGLE:
@@ -61,10 +63,14 @@ class Rules:
                 for triplet in self._determine_triplets(hand=hand)
             ]
         elif current_play_type == PlayType.SEQUENCE:
-            plays = [
-                Play(cards=seq, play_type=PlayType.SEQUENCE)
-                for seq in self._determine_sequences(hand=hand)
-            ]
+            seqs = self._determine_sequences(hand=hand)
+
+            # … but after the first sequence has been led everyone must keep the length
+            if last_play is not None:                      # pile not open
+                needed = len(last_play["cards"])           # e.g. 5-card straight
+                seqs = [s for s in seqs if len(s) == needed]
+
+            plays = [Play(cards=s, play_type=PlayType.SEQUENCE) for s in seqs]
         elif current_play_type == PlayType.DOUBLE_SEQUENCE:
             plays = [
                 Play(cards=dseq, play_type=PlayType.DOUBLE_SEQUENCE)

@@ -72,7 +72,7 @@ class Game:
         return None
 
     def apply_play(self, player_idx: int, play: Play) -> None:
-        LOGGER.info("Applying play for player %s: %s", player_idx, play)
+        LOGGER.info("Applying play for player %s: %s", player_idx, play["cards"])
         self._pop_cards_from_hand(player_idx=player_idx, cards=play["cards"])
         if self.state.current_leader is None:
             self.state.set_current_leader(player_idx)
