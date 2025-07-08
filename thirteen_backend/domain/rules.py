@@ -66,8 +66,8 @@ class Rules:
             seqs = self._determine_sequences(hand=hand)
 
             # … but after the first sequence has been led everyone must keep the length
-            if last_play is not None:                      # pile not open
-                needed = len(last_play["cards"])           # e.g. 5-card straight
+            if last_play is not None:                     
+                needed = len(last_play["cards"])           
                 seqs = [s for s in seqs if len(s) == needed]
 
             plays = [Play(cards=s, play_type=PlayType.SEQUENCE) for s in seqs]
@@ -278,7 +278,6 @@ class Rules:
     def _can_play(
         self,
         hand: list[Card],
-        current_play_pile: list[Card],
         current_play_type: PlayType,
         last_play: Play | None,
     ) -> bool:
