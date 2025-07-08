@@ -5,7 +5,8 @@ from thirteen_backend.domain.deck import Deck, DeckConfig
 from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.domain.player import Bot, Human
 from thirteen_backend.domain.rules import Rules
-from thirteen_backend.types import Play
+from thirteen_backend.logger import LOGGER
+from thirteen_backend.types import Play, PlayType
 
 
 class Game:
@@ -52,21 +53,36 @@ class Game:
             for i in range(self.cfg.players_count)
         ]
         return order
-    
+
+    def _pop_cards_from_hand(self, player_idx: int, cards: list[Card]) -> None:
+        hand = self.players[player_idx].hand
+        for card in cards:
+            try:
+                hand.remove(card)
+            except ValueError:
+                raise ValueError(f"Card {card} not found in player {player_idx}'s hand")
+        return None
+
     def apply_pass(self, player_idx: int) -> None:
+        LOGGER.info("Applying pass for player %s", player_idx)
         self.state.add_passed_player(player_idx)
+        if self.state.has_all_passed():
+            self.state.handle_new_lead(player_idx=self.state.get_new_leader_idx())
         self.state.increment_turn_number()
         return None
-    
-    
+
     def apply_play(self, player_idx: int, play: Play) -> None:
-        print(f"Applying play: {play}\nFor player: {player_idx}")
-        self.state.set_current_play_pile(play["cards"])
-        self.state.set_current_play_type(play["play_type"])
+        LOGGER.info("Applying play for player %s: %s", player_idx, play)
+        self._pop_cards_from_hand(player_idx=player_idx, cards=play["cards"])
+        if self.state.current_leader is None:
+            self.state.set_current_leader(player_idx)
+        if self.state.current_play_type == PlayType.OPEN:
+            self.state.set_current_play_type(play["play_type"])
+
+        self.state.add_to_played_pile(play["cards"])
         self.state.set_last_play(play)
         self.state.increment_turn_number()
         return None
-        
 
     # ------------------------------------------------------------------
     # Serialisation helpers

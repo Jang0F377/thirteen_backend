@@ -42,8 +42,8 @@ class Rules:
         )
 
     def _make_valid_plays(
-        self, 
-        hand: list[Card], 
+        self,
+        hand: list[Card],
         current_play_type: PlayType,
         turn_number: int,
     ) -> list[Play]:
@@ -60,6 +60,21 @@ class Rules:
                 Play(cards=triplet, play_type=PlayType.TRIPLET)
                 for triplet in self._determine_triplets(hand=hand)
             ]
+        elif current_play_type == PlayType.SEQUENCE:
+            plays = [
+                Play(cards=seq, play_type=PlayType.SEQUENCE)
+                for seq in self._determine_sequences(hand=hand)
+            ]
+        elif current_play_type == PlayType.DOUBLE_SEQUENCE:
+            plays = [
+                Play(cards=dseq, play_type=PlayType.DOUBLE_SEQUENCE)
+                for dseq in self._determine_double_sequences(hand=hand)
+            ]
+        elif current_play_type == PlayType.QUARTET:
+            plays = [
+                Play(cards=quartet, play_type=PlayType.QUARTET)
+                for quartet in self._determine_quartets(hand=hand)
+            ]
         elif current_play_type == PlayType.OPEN:
             if turn_number == 1:
                 plays = self._determine_first_turn_open(hand=hand)
@@ -67,7 +82,7 @@ class Rules:
                 plays = self._determine_open(hand=hand)
 
         return plays
-    
+
     def _determine_first_turn_open(self, hand: list[Card]) -> list[Play]:
         """Return every legal opening play that **must** contain the 3♦ card.
 
@@ -96,12 +111,16 @@ class Rules:
         # Pairs that include 3♦ – combine it with every other 3 the player owns.
         if len(threes) >= 2:
             for other in (c for c in threes if c is not three_diamond):
-                plays.append(Play(cards=[three_diamond, other], play_type=PlayType.PAIR))
+                plays.append(
+                    Play(cards=[three_diamond, other], play_type=PlayType.PAIR)
+                )
 
         # Triplets that include 3♦.
         if len(threes) >= 3:
             # Find every 2-card combination among the other 3s.
-            for others in combinations([c for c in threes if c is not three_diamond], 2):
+            for others in combinations(
+                [c for c in threes if c is not three_diamond], 2
+            ):
                 plays.append(
                     Play(cards=[three_diamond, *others], play_type=PlayType.TRIPLET)
                 )
@@ -131,7 +150,8 @@ class Rules:
         # Singles / Pairs / Triplets / Quartets --------------------------------------
         plays.extend(Play(cards=[c], play_type=PlayType.SINGLE) for c in hand)
         plays.extend(
-            Play(cards=pair, play_type=PlayType.PAIR) for pair in self._determine_pairs(hand)
+            Play(cards=pair, play_type=PlayType.PAIR)
+            for pair in self._determine_pairs(hand)
         )
         plays.extend(
             Play(cards=triplet, play_type=PlayType.TRIPLET)
@@ -144,7 +164,8 @@ class Rules:
 
         # Sequences / Double-sequences ----------------------------------------------
         plays.extend(
-            Play(cards=seq, play_type=PlayType.SEQUENCE) for seq in self._determine_sequences(hand)
+            Play(cards=seq, play_type=PlayType.SEQUENCE)
+            for seq in self._determine_sequences(hand)
         )
         plays.extend(
             Play(cards=dseq, play_type=PlayType.DOUBLE_SEQUENCE)
