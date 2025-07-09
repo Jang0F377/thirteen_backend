@@ -19,25 +19,22 @@ class Rules:
 
     def get_valid_plays(self, player_idx: int) -> list[Play] | None:
         hand = self.engine.state.players_state[player_idx].hand
-        play_type = self.engine.state.current_play_type
+        current_play_type = self.engine.state.current_play_type
         last_play = self.engine.state.last_play
-        current_play_pile = self.engine.state.current_play_pile
         print(f"hand: {hand}")
-        print(f"play_type: {play_type}")
+        print(f"current_play_type: {current_play_type}")
         print(f"last_play: {last_play}")
-        print(f"current_play_pile: {current_play_pile}")
 
         if not self._can_play(
             hand=hand,
-            current_play_pile=current_play_pile,
-            current_play_type=play_type,
+            current_play_type=current_play_type,
             last_play=last_play,
         ):
             return None
 
         return self._make_valid_plays(
             hand=hand,
-            current_play_type=play_type,
+            current_play_type=current_play_type,
             turn_number=self.engine.state.turn_number,
             last_play=last_play,
         )
@@ -66,8 +63,8 @@ class Rules:
             seqs = self._determine_sequences(hand=hand)
 
             # … but after the first sequence has been led everyone must keep the length
-            if last_play is not None:                     
-                needed = len(last_play["cards"])           
+            if last_play is not None:
+                needed = len(last_play["cards"])
                 seqs = [s for s in seqs if len(s) == needed]
 
             plays = [Play(cards=s, play_type=PlayType.SEQUENCE) for s in seqs]

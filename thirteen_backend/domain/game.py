@@ -59,9 +59,10 @@ class Game:
         for card in cards:
             try:
                 hand.remove(card)
-            except ValueError:
-                raise ValueError(f"Card {card} not found in player {player_idx}'s hand")
-        return None
+            except ValueError as exc:
+                raise ValueError(
+                    f"Card {card} not found in player {player_idx}'s hand"
+                ) from exc
 
     def apply_pass(self, player_idx: int) -> None:
         LOGGER.info("Applying pass for player %s", player_idx)

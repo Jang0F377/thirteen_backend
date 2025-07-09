@@ -6,6 +6,7 @@ from thirteen_backend.domain.classify import classify
 from thirteen_backend.domain.game import Game
 from thirteen_backend.logger import LOGGER
 from thirteen_backend.types import Play, PlayType
+from thirteen_backend.services.state_sync import persist_and_broadcast
 
 
 class WeightedPlay(Play):
@@ -41,6 +42,13 @@ async def play_bots_until_human(
             else:
                 print(f"Bot plays: {bot_move}")
                 engine.apply_play(player_idx=current_seat, play=bot_move)
+
+            seq = await persist_and_broadcast(
+                redis_client=redis_client,
+                session_id=engine.id,
+                engine=engine,
+            )
+            print(f"next_seq: {seq}")
         else:
             print("human", seq)
             return seq

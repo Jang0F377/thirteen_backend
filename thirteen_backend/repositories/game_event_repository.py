@@ -12,7 +12,7 @@ from thirteen_backend.models.game_event_model import GameEvent, GameEventType
 async def create_game_event(
     *,
     context: APIRequestContext,
-    game_id: UUID,
+    game_id: str,
     sequence: int,
     turn: int,
     event_type: GameEventType,

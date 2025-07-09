@@ -103,7 +103,14 @@ class GameState:
             "current_play_type": self.current_play_type,
             "passed_players": self.passed_players,
             "placements_this_hand": self.placements_this_hand,
-            "last_play": self.last_play,
+            "last_play": (
+                {
+                    "cards": [c.to_dict() for c in self.last_play["cards"]],
+                    "play_type": self.last_play["play_type"],
+                }
+                if self.last_play
+                else None
+            ),
         }
 
     def to_full_dict(self) -> dict:
@@ -119,5 +126,12 @@ class GameState:
             "current_play_type": self.current_play_type,
             "passed_players": self.passed_players,
             "placements_this_hand": self.placements_this_hand,
-            "last_play": self.last_play,
+            "last_play": (
+                {
+                    "cards": [c.to_dict() for c in self.last_play["cards"]],
+                    "play_type": self.last_play["play_type"],
+                }
+                if self.last_play
+                else None
+            ),
         }

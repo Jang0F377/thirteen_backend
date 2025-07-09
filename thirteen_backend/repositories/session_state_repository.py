@@ -1,5 +1,4 @@
 import json
-from uuid import UUID
 
 from redis.asyncio import Redis
 
@@ -8,7 +7,7 @@ from thirteen_backend.domain.game import Game
 from thirteen_backend.models.game_event_model import GameEvent
 
 
-def _make_session_state_key(game_id: UUID) -> str:
+def _make_session_state_key(game_id: str) -> str:
     """
     Construct the Redis key used to persist the *serialized* game state for
     the supplied session.
@@ -26,7 +25,7 @@ def _make_session_state_key(game_id: UUID) -> str:
     return f"session:{game_id}:state"
 
 
-def _make_session_event_key(game_id: UUID) -> str:
+def _make_session_event_key(game_id: str) -> str:
     """
     Construct the Redis key representing the *list* that buffers game events
     for the specified session.
@@ -44,7 +43,7 @@ def _make_session_event_key(game_id: UUID) -> str:
     return f"session:{game_id}:events"
 
 
-def _make_session_sequencer_key(game_id: UUID) -> str:
+def _make_session_sequencer_key(game_id: str) -> str:
     """
     Construct the Redis key that stores the per-session sequence counter.
 
@@ -62,7 +61,7 @@ def _make_session_sequencer_key(game_id: UUID) -> str:
 
 
 async def set_session_state(
-    *, redis_client: Redis, game_id: UUID, game_state: Game
+    *, redis_client: Redis, game_id: str, game_state: Game
 ) -> bool:
     """Persist the current :class:`~thirteen_backend.domain.game_state.Game`
     for the supplied session in Redis.
@@ -101,7 +100,7 @@ async def set_session_state(
 
 
 async def push_session_event(
-    *, redis_client: Redis, game_id: UUID, event: GameEvent
+    *, redis_client: Redis, game_id: str, event: GameEvent
 ) -> None:
     """Append a new game *event* to the Redis list that buffers session events.
 
@@ -125,7 +124,7 @@ async def push_session_event(
 async def increment_session_sequencer(
     *,
     redis_client: Redis,
-    game_id: UUID,
+    game_id: str,
 ) -> int:
     """Atomically increment the per-session sequence counter.
 
@@ -150,7 +149,7 @@ async def increment_session_sequencer(
 async def initialize_session_sequencer(
     *,
     redis_client: Redis,
-    game_id: UUID,
+    game_id: str,
     sequencer: int = 0,
 ) -> bool:
     """Initialise the session sequence counter in Redis.
@@ -183,7 +182,7 @@ async def initialize_session_sequencer(
 async def get_session_state(
     *,
     redis_client: Redis,
-    game_id: UUID,
+    game_id: str,
 ) -> Game | None:
     """Retrieve and deserialize the current game state for the given session.
 
@@ -213,7 +212,7 @@ async def get_session_state(
 async def get_session_sequencer(
     *,
     redis_client: Redis,
-    game_id: UUID,
+    game_id: str,
 ) -> int | None:
     """Return the current value of the session's sequence counter, if set.
 

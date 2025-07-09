@@ -92,7 +92,7 @@ async def create_game_session(
 
     session_set_success = await session_state_repository.set_session_state(
         redis_client=context.redis_client,
-        game_id=game_session.id,
+        game_id=str(game_session.id),
         game_state=init_game_state,
     )
 
@@ -108,7 +108,7 @@ async def create_game_session(
 
     await session_state_repository.initialize_session_sequencer(
         redis_client=context.redis_client,
-        game_id=game_session.id,
+        game_id=str(game_session.id),
         sequencer=init_sequence,
     )
 
@@ -125,7 +125,7 @@ async def create_game_session(
 
     await session_state_repository.push_session_event(
         redis_client=context.redis_client,
-        game_id=game_session.id,
+        game_id=str(game_session.id),
         event=init_game_event,
     )
 
