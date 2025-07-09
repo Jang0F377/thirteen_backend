@@ -161,7 +161,8 @@ class Game:
             last_play=(
                 {
                     "cards": [
-                        Card(suit=c["suit"], rank=c["rank"]) for c in state["last_play"]["cards"]
+                        Card(suit=c["suit"], rank=c["rank"])
+                        for c in state["last_play"]["cards"]
                     ],
                     "play_type": state["last_play"]["play_type"],
                 }

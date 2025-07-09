@@ -7,7 +7,13 @@ from thirteen_backend.domain.rules import Rules
 from thirteen_backend.types import PlayType
 
 
-def _make_engine(hand: list[Card], *, current_play_type: PlayType, turn_number: int = 1, last_play=None):
+def _make_engine(
+    hand: list[Card],
+    *,
+    current_play_type: PlayType,
+    turn_number: int = 1,
+    last_play=None
+):
     """Return a stub that mimics *Game* enough for *Rules* helpers."""
     player_stub = types.SimpleNamespace(hand=hand)
     state_stub = types.SimpleNamespace(
@@ -23,6 +29,7 @@ def _make_engine(hand: list[Card], *, current_play_type: PlayType, turn_number: 
 # get_valid_plays – OPEN pile first turn (must contain 3♦)
 # ---------------------------------------------------------------------------
 
+
 def test_get_valid_plays_first_turn_open_includes_3d():
     hand = [Card("D", "3"), Card("C", "3"), Card("D", "7")]
     engine = _make_engine(hand, current_play_type=PlayType.OPEN, turn_number=1)
@@ -36,6 +43,7 @@ def test_get_valid_plays_first_turn_open_includes_3d():
 # ---------------------------------------------------------------------------
 # get_valid_plays – SINGLE pile
 # ---------------------------------------------------------------------------
+
 
 def test_get_valid_plays_single_returns_all_singles():
     hand = [Card("D", "5"), Card("C", "7")]  # two cards
@@ -57,6 +65,7 @@ def test_get_valid_plays_single_returns_all_singles():
 # _can_play logic – SEQUENCE length enforcement
 # ---------------------------------------------------------------------------
 
+
 def test_can_play_sequence_requires_min_length():
     rules = Rules(engine=_make_engine([], current_play_type=PlayType.SEQUENCE))
 
@@ -74,4 +83,4 @@ def test_can_play_sequence_requires_min_length():
         long_hand,
         PlayType.SEQUENCE,
         last_play={"cards": [Card("D", "5"), Card("D", "6")]},
-    ) 
+    )

@@ -3,8 +3,8 @@ from uuid import UUID
 
 from redis.asyncio import Redis
 
-from thirteen_backend.logger import LOGGER
 from thirteen_backend.domain.game import Game
+from thirteen_backend.logger import LOGGER
 from thirteen_backend.repositories.session_state_repository import (
     increment_session_sequencer,
     set_session_state,

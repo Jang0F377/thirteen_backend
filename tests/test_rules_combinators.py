@@ -11,7 +11,9 @@ from thirteen_backend.types import PlayType
 def rules():
     """Return a *Rules* instance whose engine is a simple stub.*"""
 
-    dummy_engine = types.SimpleNamespace()  # Rules helper methods in this test don't use engine
+    dummy_engine = (
+        types.SimpleNamespace()
+    )  # Rules helper methods in this test don't use engine
     return Rules(engine=dummy_engine)
 
 
@@ -37,9 +39,12 @@ def test_determine_pairs_triplets_quartets(rules):
 def test_determine_sequences_and_double_sequences(rules):
     # Cards for ranks 3,4,5 – two of each to allow both sequence and double sequence
     hand = [
-        Card("D", "3"), Card("C", "3"),
-        Card("D", "4"), Card("C", "4"),
-        Card("D", "5"), Card("C", "5"),
+        Card("D", "3"),
+        Card("C", "3"),
+        Card("D", "4"),
+        Card("C", "4"),
+        Card("D", "5"),
+        Card("C", "5"),
     ]
 
     seqs = rules._determine_sequences(hand)
@@ -62,4 +67,4 @@ def test_determine_first_turn_open_requires_3d(rules):
     assert plays  # at least one play
     assert all(three_d in p["cards"] for p in plays)
     # And they include at least the single 3♦ play
-    assert any(len(p["cards"]) == 1 and p["cards"][0] == three_d for p in plays) 
+    assert any(len(p["cards"]) == 1 and p["cards"][0] == three_d for p in plays)

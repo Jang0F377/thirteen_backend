@@ -5,8 +5,8 @@ from redis.asyncio import Redis
 from thirteen_backend.domain.classify import classify
 from thirteen_backend.domain.game import Game
 from thirteen_backend.logger import LOGGER
-from thirteen_backend.types import Play, PlayType
 from thirteen_backend.services.state_sync import persist_and_broadcast
+from thirteen_backend.types import Play, PlayType
 
 
 class WeightedPlay(Play):

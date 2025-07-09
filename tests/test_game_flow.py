@@ -39,7 +39,9 @@ def test_apply_play_updates_state(seeded_game):
 def test_apply_pass_marks_passed(seeded_game):
     game = seeded_game
     # Choose a non-leader player for simplicity
-    non_leader_idx = next(i for i in range(len(game.players)) if i != game.state.current_leader)
+    non_leader_idx = next(
+        i for i in range(len(game.players)) if i != game.state.current_leader
+    )
 
     initial_turn = game.state.turn_number
 
@@ -70,7 +72,7 @@ def test_game_state_serialization_roundtrip(seeded_game):
     assert restored_game.state.last_play is not None
     restored_play = restored_game.state.last_play
     assert restored_play["play_type"] == PlayType.SINGLE
-    assert restored_play["cards"][0] == Card("D", "3") 
+    assert restored_play["cards"][0] == Card("D", "3")
 
 
 def test_game_state_handle_new_hand_and_lead(seeded_game):
@@ -106,4 +108,4 @@ def test_game_state_handle_new_hand_and_lead(seeded_game):
     assert state.current_leader == 3
     assert state.passed_players == []
     assert state.current_play_pile == []
-    assert state.current_play_type == PlayType.OPEN 
+    assert state.current_play_type == PlayType.OPEN
