@@ -113,14 +113,12 @@ async def create_game_session(
     )
 
     init_game_event = await game_event_repository.create_game_event(
-        context=context,
         game_id=game_session.id,
         sequence=0,
         turn=0,
         event_type=GameEventType.INIT,
         payload=init_game_state.to_full_dict(),
         ts=ts,
-        flush_to_db=False,
     )
 
     await session_state_repository.push_session_event(

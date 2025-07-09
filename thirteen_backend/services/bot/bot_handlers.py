@@ -39,13 +39,17 @@ async def play_bots_until_human(
             if not bot_move:
                 print("Bot decides to pass")
                 engine.apply_pass(player_idx=current_seat)
+                play = None
             else:
                 print(f"Bot plays: {bot_move}")
                 engine.apply_play(player_idx=current_seat, play=bot_move)
+                play = bot_move
 
             seq = await persist_and_broadcast(
                 redis_client=redis_client,
                 session_id=engine.id,
+                current_sequence=seq,
+                play=play,
                 engine=engine,
             )
             print(f"next_seq: {seq}")

@@ -121,8 +121,6 @@ async def _save_engine(
     session_id: str,
     engine: Game,
 ) -> None:
-    print(f"{engine.id}")
-
     set_success, new_seq = await asyncio.gather(
         set_session_state(
             redis_client=redis_client, game_id=session_id, game_state=engine

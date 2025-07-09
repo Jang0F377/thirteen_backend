@@ -2,27 +2,22 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
-from thirteen_backend.context import APIRequestContext
 from thirteen_backend.models.game_event_model import GameEvent, GameEventType
 
 
 async def create_game_event(
     *,
-    context: APIRequestContext,
     game_id: str,
     sequence: int,
     turn: int,
     event_type: GameEventType,
     payload: dict[str, Any] | None = None,
     ts: datetime | None = None,
-    flush_to_db: bool = True,
 ) -> GameEvent:
     """Persist a new ``GameEvent`` for the provided game session.
 
     Parameters
     ----------
-    context:
-        The current :class:`~thirteen_backend.context.APIRequestContext`.
     game_id:
         The identifier of the ``GameSession`` this event belongs to.
     turn:
@@ -33,17 +28,11 @@ async def create_game_event(
         Optional structured data associated with the event.
     ts:
         Optional timestamp of the event. If *None*, the current UTC time is used.
-    flush_to_db:
-        Whether to flush the event to the database. If *True*, the event will be
-        added to the database session and flushed to the database. If *False*,
-        the event will not be added to the database session and will not be
-        flushed to the database.
 
     Returns
     -------
     GameEvent
-        The newly-created ``GameEvent`` instance **after** it has been flushed to
-        the database (i.e. it will contain a generated ``id``).
+        The newly-created ``GameEvent`` instance
     """
     event = GameEvent(
         id=uuid4(),
@@ -54,9 +43,5 @@ async def create_game_event(
         ts=ts or datetime.now(timezone.utc),
         game_id=game_id,
     )
-
-    if flush_to_db:
-        context.db_session.add(event)
-        await context.db_session.flush()
 
     return event
