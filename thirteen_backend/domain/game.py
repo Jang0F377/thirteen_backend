@@ -83,7 +83,6 @@ class Game:
         self.state.add_to_played_pile(play["cards"])
         self.state.set_last_play(play)
         self.state.increment_turn_number()
-        return None
 
     # ------------------------------------------------------------------
     # Serialisation helpers
@@ -159,13 +158,23 @@ class Game:
             current_play_type=state["current_play_type"],
             passed_players=state["passed_players"],
             placements_this_hand=state["placements_this_hand"],
+            last_play=(
+                {
+                    "cards": [
+                        Card(suit=c["suit"], rank=c["rank"]) for c in state["last_play"]["cards"]
+                    ],
+                    "play_type": state["last_play"]["play_type"],
+                }
+                if state.get("last_play")
+                else None
+            ),
             game_id=data["id"],
         )
 
         # ------------------------------------------------------------------
         # Instantiate *Game* without invoking __init__
         # ------------------------------------------------------------------
-        game = cls.__new__(cls)  # type: ignore
+        game = cls.__new__(cls)
         game.id = data["id"]
         game.cfg = DeckConfig()
         game.players = players

@@ -1,11 +1,8 @@
 from datetime import datetime, timezone
 from typing import Any
-from uuid import UUID, uuid4
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from uuid import uuid4
 
 from thirteen_backend.context import APIRequestContext
-from thirteen_backend.domain.game_state import GameState
 from thirteen_backend.models.game_event_model import GameEvent, GameEventType
 
 
