@@ -1,5 +1,8 @@
 # Thirteen Backend
 
+[![CI](https://github.com/Jang0F377/thirteen_backend/actions/workflows/tests.yml/badge.svg)](https://github.com/Jang0F377/thirteen_backend/actions/workflows/tests.yml)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](https://img.shields.io/badge/coverage-90%25-brightgreen)
+
 `thirteen-backend` is an asynchronous **FastAPI** service that powers the server-side logic for the classic Vietnamese card game _Thirteen_ (also known as Tiến Lên).  
 It exposes a REST API for session management and a WebSocket API for fast, bidirectional, real-time gameplay events.
 
@@ -218,69 +221,3 @@ A template is provided at **.env.example** – copy/rename it to `.env` and supp
 | **Redis**             |                                                                          |
 | `CACHE_URL`           | Full redis URL (e.g. `redis://:password@thirteen-cache:6379/0`)          |
 | `CACHE_PASSWORD`      | Password passed to `redis-server --requirepass`                          |
-
----
-
-## Local development (without Docker)
-
-If you prefer running the service directly on your machine:
-
-1. Install **Python 3.12** and **Poetry ≥ 1.8**.
-2. `poetry install` to create a virtual environment and download deps.
-3. Create a Postgres & Redis instance (or edit `.env` to point to your own).
-4. Apply DB schema: `alembic upgrade head`.
-5. Run the dev server:
-
-   ```bash
-   ENV=development poetry run fastapi dev app.py --port 8000 --host 0.0.0.0
-   ```
-
-Hot-reload is enabled with the `fastapi dev` command.
-
----
-
-## Database migrations
-
-The project uses **Alembic**. New migrations are generated automatically from SQLAlchemy models:
-
-```bash
-poetry run alembic revision --autogenerate -m "<description>"
-poetry run alembic upgrade head
-```
-
----
-
-## Running tests
-
-```bash
-poetry run pytest -q
-```
-
-The `tests/` directory ships with comprehensive unit tests covering domain logic, utility helpers and the WebSocket manager.
-
----
-
-## Logging
-
-Logging is configured via [logging.conf](logging.conf) and initialised in `thirteen_backend.logger`. The `ENV` variable switches between **DEBUG** (development) and **INFO** (production) levels.
-
----
-
-## Useful helper commands
-
-```bash
-# Start stack in detached mode
-$ docker compose up --build -d
-
-# View container logs
-$ docker compose logs -f thirteen-backend
-
-# Enter Postgres shell inside container
-$ docker exec -it thirteen-postgres psql -U "$BACKEND_DB_USER" "$BACKEND_DB_NAME"
-```
-
----
-
-## License
-
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
