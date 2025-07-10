@@ -21,6 +21,7 @@ def _make_engine(
         current_play_type=current_play_type,
         turn_number=turn_number,
         last_play=last_play,
+        passed_players=[],  # ensure attribute exists for Rules checks
     )
     return types.SimpleNamespace(state=state_stub)
 
