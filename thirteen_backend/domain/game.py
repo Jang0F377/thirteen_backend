@@ -182,6 +182,7 @@ class Game:
         game.deck = None  # deck not required post-deal
         game.current_turn_order = state["current_turn_order"]
         game.state = game_state
+        game.rules = Rules(engine=game)
         return game
 
 

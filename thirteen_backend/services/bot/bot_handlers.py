@@ -48,7 +48,6 @@ async def play_bots_until_human(
             seq = await persist_and_broadcast(
                 redis_client=redis_client,
                 session_id=engine.id,
-                current_sequence=seq,
                 play=play,
                 engine=engine,
             )

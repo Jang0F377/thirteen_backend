@@ -103,6 +103,7 @@ class GameState:
             "current_play_type": self.current_play_type,
             "passed_players": self.passed_players,
             "placements_this_hand": self.placements_this_hand,
+            "num_passed_players": len(self.passed_players),
             "last_play": (
                 {
                     "cards": [c.to_dict() for c in self.last_play["cards"]],
@@ -124,6 +125,7 @@ class GameState:
             "hand_number": self.hand_number,
             "current_play_pile": [c.to_dict() for c in self.current_play_pile],
             "current_play_type": self.current_play_type,
+            "num_passed_players": len(self.passed_players),
             "passed_players": self.passed_players,
             "placements_this_hand": self.placements_this_hand,
             "last_play": (

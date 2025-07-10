@@ -11,6 +11,8 @@ from thirteen_backend.repositories.session_state_repository import (
     increment_session_sequencer,
     set_session_state,
 )
+from thirteen_backend.services.bot.bot_handlers import play_bots_until_human
+from thirteen_backend.services.state_sync import persist_and_broadcast
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
 
@@ -35,7 +37,12 @@ async def handle_play(
 
     engine.state.increment_turn_number()
 
-    await _save_engine(redis_client=redis_client, session_id=session_id, engine=engine)
+    await persist_and_broadcast(
+        redis_client=redis_client,
+        session_id=session_id,
+        play=choices,
+        engine=engine,
+    )
 
 
 async def handle_pass(
@@ -44,11 +51,22 @@ async def handle_pass(
     session_id: str,
     player_id: str,
 ) -> None:
-    engine, _ = await _load_engine(redis_client=redis_client, session_id=session_id)
+    engine, seq = await _load_engine(redis_client=redis_client, session_id=session_id)
 
-    engine.state.increment_turn_number()
+    engine.apply_pass(player_idx=player_id)
 
-    await _save_engine(redis_client=redis_client, session_id=session_id, engine=engine)
+    await persist_and_broadcast(
+        redis_client=redis_client,
+        session_id=session_id,
+        play=None,
+        engine=engine,
+    )
+
+    await play_bots_until_human(
+        redis_client=redis_client,
+        engine=engine,
+        seq=seq,
+    )
 
 
 async def handle_ready(
@@ -113,28 +131,3 @@ async def _load_engine(
     if game_state is None or seq is None:
         raise ValueError("Game state or sequencer not found")
     return game_state, seq
-
-
-async def _save_engine(
-    *,
-    redis_client: Redis,
-    session_id: str,
-    engine: Game,
-) -> None:
-    set_success, new_seq = await asyncio.gather(
-        set_session_state(
-            redis_client=redis_client, game_id=session_id, game_state=engine
-        ),
-        increment_session_sequencer(redis_client=redis_client, game_id=session_id),
-    )
-    if not set_success or new_seq is None:
-        raise ValueError("Failed to set session state")
-
-    await websocket_manager.broadcast(
-        session_id=session_id,
-        message=make_state_sync(
-            session_id=session_id,
-            seq=new_seq,
-            game=engine,
-        ),
-    )

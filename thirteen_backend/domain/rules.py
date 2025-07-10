@@ -3,6 +3,7 @@ from __future__ import annotations
 from itertools import combinations
 from typing import TYPE_CHECKING
 
+from thirteen_backend.domain.classify import classify
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.constants import RANK_ORDER, SUIT_ORDER
 from thirteen_backend.logger import LOGGER
@@ -18,6 +19,17 @@ class Rules:
         self.engine = engine
 
     def get_valid_plays(self, player_idx: int) -> list[Play] | None:
+        # If the player has passed during this pile they cannot play again until
+        # a new lead is established (``passed_players`` list is cleared in
+        # ``GameState.handle_new_lead``).  Bail out early so that callers know
+        # no action is possible besides another *pass*.
+        if player_idx in self.engine.state.passed_players:
+            LOGGER.debug(
+                "Player %s has already passed – no valid plays until new pile",
+                player_idx,
+            )
+            return None
+
         hand = self.engine.state.players_state[player_idx].hand
         current_play_type = self.engine.state.current_play_type
         last_play = self.engine.state.last_play
@@ -84,7 +96,29 @@ class Rules:
             else:
                 plays = self._determine_open(hand=hand)
 
-        return plays
+        # ------------------------------------------------------------------
+        # Filter out plays that cannot beat the previous play
+        # ------------------------------------------------------------------
+        if last_play is not None:
+            # Determine the strength of the previous play using the same
+            # helper utilised by the bot when weighing plays.  This ensures
+            # that only plays *stronger* than the last trick are considered
+            # legal.  We purposely keep this logic inside the *Rules* layer
+            # so that it applies uniformly to both bots and (future) human
+            # moves.
+
+            prev_cls = classify(last_play["cards"]) if last_play else None
+            if prev_cls is not None:
+                _, prev_strength = prev_cls
+
+                # Keep only plays whose strength outranks the previous one
+                plays = [
+                    play
+                    for play in plays
+                    if (classify(play["cards"])[1] > prev_strength)
+                ]
+
+        return plays  # filtered list
 
     def _determine_first_turn_open(self, hand: list[Card]) -> list[Play]:
         """Return every legal opening play that **must** contain the 3♦ card.
