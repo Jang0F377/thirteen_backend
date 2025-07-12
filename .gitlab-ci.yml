@@ -20,7 +20,7 @@ tests:
     # Install project dependencies via Poetry
     - poetry install --no-interaction --no-ansi
     # Execute tests with coverage, mirroring the GitHub workflow
-    - poetry run coverage run -m pytest -q
+    - poetry run coverage run -m pytest
   artifacts:
     name: "coverage-report"
     paths:

@@ -51,7 +51,7 @@ async def handle_pass(
 ) -> None:
     engine, seq = await _load_engine(redis_client=redis_client, session_id=session_id)
 
-    engine.apply_pass(player_idx=player_id)
+    engine.apply_pass(player_idx=engine.state.get_player_idx_by_id(player_id=player_id))
 
     await persist_and_broadcast(
         redis_client=redis_client,

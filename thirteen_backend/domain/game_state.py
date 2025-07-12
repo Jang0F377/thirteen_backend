@@ -30,6 +30,12 @@ class GameState:
         for idx in self.current_turn_order:
             if idx not in self.passed_players:
                 return idx
+            
+    def get_player_idx_by_id(self, player_id: str) -> int:
+        for p in self.players_state:
+            if p.id == player_id:
+                return p.player_index
+        raise ValueError(f"Player with id {player_id} not found")
 
     def set_last_play(self, play: Play) -> None:
         self.last_play = play

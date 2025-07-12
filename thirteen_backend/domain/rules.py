@@ -99,7 +99,7 @@ class Rules:
         # ------------------------------------------------------------------
         # Filter out plays that cannot beat the previous play
         # ------------------------------------------------------------------
-        if last_play is not None:
+        if last_play is not None and current_play_type != PlayType.OPEN:
             # Determine the strength of the previous play using the same
             # helper utilised by the bot when weighing plays.  This ensures
             # that only plays *stronger* than the last trick are considered
