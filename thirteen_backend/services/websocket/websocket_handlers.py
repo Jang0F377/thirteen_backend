@@ -8,8 +8,6 @@ from thirteen_backend.logger import LOGGER
 from thirteen_backend.repositories.session_state_repository import (
     get_session_sequencer,
     get_session_state,
-    increment_session_sequencer,
-    set_session_state,
 )
 from thirteen_backend.services.bot.bot_handlers import play_bots_until_human
 from thirteen_backend.services.state_sync import persist_and_broadcast

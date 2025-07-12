@@ -1,0 +1,31 @@
+image: python:3.12
+
+stages:
+  - test
+
+# Cache pip and Poetry downloads to speed up subsequent jobs
+cache:
+  paths:
+    - .cache/pip
+    - $HOME/.cache/pypoetry
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+tests:
+  stage: test
+  script:
+    - python -m pip install --upgrade pip
+    - pip install poetry
+    # Install project dependencies via Poetry
+    - poetry install --no-interaction --no-ansi
+    # Execute tests with coverage, mirroring the GitHub workflow
+    - poetry run coverage run -m pytest -q
+  artifacts:
+    name: "coverage-report"
+    paths:
+      - .coverage
+    when: always
+  only:
+    - merge_requests
+    - main
