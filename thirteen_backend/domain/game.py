@@ -66,7 +66,8 @@ class Game:
 
     def apply_pass(self, player_idx: int) -> None:
         LOGGER.info("Applying pass for player %s", player_idx)
-        self.state.add_passed_player(player_idx)
+        if player_idx not in self.state.passed_players:
+            self.state.add_passed_player(player_idx)
         if self.state.has_all_passed():
             self.state.handle_new_lead(player_idx=self.state.get_new_leader_idx())
         self.state.increment_turn_number()

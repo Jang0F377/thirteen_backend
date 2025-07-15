@@ -34,6 +34,10 @@ async def play_bots_until_human(
             % engine.cfg.players_count  # -1 because turn_number is 1-indexed
         ]
         current_player = engine.players[current_seat]
+
+        # --------------------------------------------------------------
+        # Bot turn – either play or pass based on simple heuristic
+        # --------------------------------------------------------------
         if current_player.is_bot:
             bot_move = await _choose_bot_move(engine=engine, bot_idx=current_seat)
             if not bot_move:
@@ -52,7 +56,37 @@ async def play_bots_until_human(
                 engine=engine,
             )
             print(f"next_seq: {seq}")
+        # --------------------------------------------------------------
+        # Human turn – return control only when the human **can act**
+        # (i.e. they are *not* in the passed_players list). If they have
+        # already passed in the current pile we automatically skip their
+        # turn so the bots can continue until a new pile is opened.
+        # --------------------------------------------------------------
         else:
+            human_idx = current_seat
+            if human_idx in engine.state.passed_players:
+                # The human has already passed for this pile – auto-skip.
+                LOGGER.info(
+                    "Auto-skipping human turn because they have already passed",
+                    extra={
+                        "turn_number": engine.state.turn_number,
+                        "current_leader": engine.state.current_leader,
+                    },
+                )
+                
+                engine.apply_pass(player_idx=human_idx)
+
+                seq = await persist_and_broadcast(
+                    redis_client=redis_client,
+                    session_id=engine.id,
+                    play=None,
+                    engine=engine,
+                )
+
+                # Continue the loop (bots may still have moves)
+                continue
+
+            # Human can now act – break the loop and return
             print("human", seq)
             return seq
 

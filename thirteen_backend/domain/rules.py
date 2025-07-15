@@ -58,9 +58,20 @@ class Rules:
         turn_number: int,
         last_play: Play | None,
     ) -> list[Play]:
-        plays = []
+        # Pre-compute quartets once so that they can be appended to the
+        # candidate list for *all* pile types (a quartet can beat anything).
+        quartets: list[Play] = [
+            Play(cards=q, play_type=PlayType.QUARTET)
+            for q in self._determine_quartets(hand=hand)
+        ]
+
+        plays: list[Play] = []
         if current_play_type == PlayType.SINGLE:
             plays = [Play(cards=[c], play_type=PlayType.SINGLE) for c in hand]
+            plays.extend(
+                Play(cards=dseq, play_type=PlayType.DOUBLE_SEQUENCE)
+                for dseq in self._determine_double_sequences(hand=hand)
+            )
         elif current_play_type == PlayType.PAIR:
             plays = [
                 Play(cards=pair, play_type=PlayType.PAIR)
@@ -86,10 +97,8 @@ class Rules:
                 for dseq in self._determine_double_sequences(hand=hand)
             ]
         elif current_play_type == PlayType.QUARTET:
-            plays = [
-                Play(cards=quartet, play_type=PlayType.QUARTET)
-                for quartet in self._determine_quartets(hand=hand)
-            ]
+            # Only quartets are legal when the pile is a quartet.
+            plays = quartets
         elif current_play_type == PlayType.OPEN:
             if turn_number == 1:
                 plays = self._determine_first_turn_open(hand=hand)
@@ -99,6 +108,12 @@ class Rules:
         # ------------------------------------------------------------------
         # Filter out plays that cannot beat the previous play
         # ------------------------------------------------------------------
+        # After generating the base candidate list, if we are not in an OPEN
+        # pile and the pile itself is **not** already a quartet, append the
+        # previously computed quartets so that they can beat the current pile.
+        if current_play_type not in (PlayType.OPEN, PlayType.QUARTET):
+            plays.extend(quartets)
+
         if last_play is not None and current_play_type != PlayType.OPEN:
             # Determine the strength of the previous play using the same
             # helper utilised by the bot when weighing plays.  This ensures
@@ -325,7 +340,11 @@ class Rules:
                 return len(hand) >= len(last_play["cards"])
             return False
         if current_play_type == PlayType.DOUBLE_SEQUENCE:
-            pass
+            # A player can always respond to a double-sequence with a quartet
+            # (or another double-sequence). Allow play as long as they still
+            # hold at least four cards.
+            return len(hand) >= 4
         if current_play_type == PlayType.QUARTET:
-            pass
+            # Needs at least four cards to attempt a quartet response.
+            return len(hand) >= 4
         return False
