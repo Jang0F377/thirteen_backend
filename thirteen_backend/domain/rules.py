@@ -3,8 +3,8 @@ from __future__ import annotations
 from itertools import combinations
 from typing import TYPE_CHECKING
 
-from thirteen_backend.domain.classify import classify
 from thirteen_backend.domain.card import Card
+from thirteen_backend.domain.classify import classify
 from thirteen_backend.domain.constants import RANK_ORDER, SUIT_ORDER
 from thirteen_backend.logger import LOGGER
 

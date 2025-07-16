@@ -5,15 +5,15 @@ from redis.asyncio import Redis
 
 from thirteen_backend.domain.game import Game
 from thirteen_backend.logger import LOGGER
+from thirteen_backend.models.game_event_model import GameEventType
 from thirteen_backend.repositories import game_event_repository
 from thirteen_backend.repositories.session_state_repository import (
     increment_session_sequencer,
-    set_session_state,
     push_session_event,
+    set_session_state,
 )
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
-from thirteen_backend.models.game_event_model import GameEventType
 from thirteen_backend.types import Play
 
 

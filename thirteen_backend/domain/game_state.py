@@ -30,7 +30,7 @@ class GameState:
         for idx in self.current_turn_order:
             if idx not in self.passed_players:
                 return idx
-            
+
     def get_player_idx_by_id(self, player_id: str) -> int:
         for p in self.players_state:
             if p.id == player_id:
@@ -48,6 +48,12 @@ class GameState:
 
     def increment_turn_number(self) -> None:
         self.turn_number += 1
+
+    def increment_hand_number(self) -> None:
+        self.hand_number += 1
+
+    def remove_player_from_turn_order(self, player_idx: int) -> None:
+        self.current_turn_order.remove(player_idx)
 
     def set_current_leader(self, player_idx: int) -> None:
         self.current_leader = player_idx
@@ -83,14 +89,13 @@ class GameState:
         self.set_current_leader(player_idx)
 
     def handle_new_hand(self) -> None:
-        self.hand_number += 1
+        self.increment_hand_number()
         self.reset_passed_players()
         self.reset_placements()
         self.reset_current_play_pile()
         self.reset_current_play_type()
         self.reset_last_play()
         self.reset_current_leader()
-        return None
 
     # ------------------------------------------------------------------
     # Serialisation helpers

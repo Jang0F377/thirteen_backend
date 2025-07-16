@@ -73,7 +73,7 @@ async def play_bots_until_human(
                         "current_leader": engine.state.current_leader,
                     },
                 )
-                
+
                 engine.apply_pass(player_idx=human_idx)
 
                 seq = await persist_and_broadcast(

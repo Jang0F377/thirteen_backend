@@ -103,6 +103,56 @@ class Game:
             "state": self.state.to_full_dict(),
         }
 
+    # --------------------------------------------------------------
+    #  Hand-completion helpers
+    # --------------------------------------------------------------
+    def _handle_player_gone_out(self, player_idx: int) -> None:
+        """
+        Triggered whenever a player's hand might have reached zero cards.
+        If this is the first time we see that player at 0 cards during the
+        current hand we…
+        1.  append their seat index to state.placements_this_hand
+        2.  write the resulting *rank* (1st, 2nd …) into the player's own
+            `placements` list so it survives between hands
+        3.  optionally remove the seat from `current_turn_order`
+        """
+        if (
+            len(self.players[player_idx].hand) > 0
+            or player_idx in self.state.placements_this_hand
+        ):
+            return  # nothing to do
+
+        LOGGER.info("Handling player %s going out", player_idx)
+        self.state.add_placement(player_idx)  # ➊
+        rank = len(self.state.placements_this_hand)
+        self.players[player_idx].placements.append(rank)  # ➋
+
+        # ➌ – keeps the turn-rotation code simple because we will no longer
+        #     land on a seat that cannot act.
+        self.state.remove_player_from_turn_order(player_idx)
+
+        # If only one active player remains the hand is over
+        if len(self.state.current_turn_order) == 1:
+            LOGGER.info(
+                "This game has ended - there is only one player with cards left",
+                extra={"game_id": self.id},
+            )
+            last_idx = self.state.current_turn_order[0]
+            self.state.add_placement(last_idx)
+            self.players[last_idx].placements.append(
+                len(self.state.placements_this_hand)
+            )
+            self._start_new_hand()
+
+    def _start_new_hand(self) -> None:
+        LOGGER.info("Starting a new hand", extra={"game_id": self.id})
+        self.state.handle_new_hand()
+        self.deck = Deck(self.cfg)
+        self._deal_cards()
+        self.current_turn_order = self._determine_initial_turn_order()
+        self.state.current_turn_order = self.current_turn_order
+        self.state.current_leader = self.current_turn_order[0]
+
     # ------------------------------------------------------------------
     # Reconstruction helpers
     # ------------------------------------------------------------------
