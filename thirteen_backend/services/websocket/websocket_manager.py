@@ -8,6 +8,9 @@ import logging
 import uuid
 from typing import Any, Dict, Set
 
+# Metrics
+from thirteen_backend import metrics
+
 from fastapi import WebSocket, WebSocketDisconnect
 
 logger = logging.getLogger("websocket-manager")
@@ -27,6 +30,8 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
         await ws.accept()
         conn_id = self._connection_key(ws)
         self._active.setdefault(session_id, {})[conn_id] = ws
+        # Metrics: increment active connections gauge
+        metrics.increment_ws_connections(session_id=session_id)
         logger.info("WS connected: session=%s conn=%s", session_id, conn_id)
         return conn_id
 
@@ -37,6 +42,8 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
             self._active[session_id].pop(conn_id, None)
             if not self._active[session_id]:
                 del self._active[session_id]
+        # Metrics: decrement active connections gauge
+        metrics.decrement_ws_connections(session_id=session_id)
         logger.info("WS disconnected: session=%s conn=%s", session_id, conn_id)
 
     # ------------------------------------------------------------------
@@ -54,6 +61,8 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
                     await ws.send_text(message)
                 else:
                     await ws.send_json(message)
+                # Metrics: count successfully delivered websocket messages
+                metrics.increment_ws_messages(session_id=session_id, direction="broadcast")
             except WebSocketDisconnect:
                 dead.add(conn_id)
         for conn_id in dead:
@@ -78,6 +87,8 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
                 await ws.send_text(message)
             else:
                 await ws.send_json(message)
+            # Metrics: count successfully delivered websocket messages (direct)
+            metrics.increment_ws_messages(session_id=session_id, direction="direct")
             return True
         except WebSocketDisconnect:
             # cleanup & report failure

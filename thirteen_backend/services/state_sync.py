@@ -14,6 +14,7 @@ from thirteen_backend.repositories.session_state_repository import (
 )
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
+from thirteen_backend import metrics
 from thirteen_backend.types import Play
 
 
@@ -54,6 +55,9 @@ async def persist_and_broadcast(
 
     if not set_ok:
         raise RuntimeError("Failed to save game state")
+
+    # Metrics
+    metrics.increment_game_event(event_type=event.type)
 
     # Broadcast
     await websocket_manager.broadcast(

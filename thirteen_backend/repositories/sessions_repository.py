@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from thirteen_backend import metrics
 from thirteen_backend.context import APIRequestContext
 from thirteen_backend.domain.game import Game
 from thirteen_backend.errors import Error, ErrorCode
@@ -121,6 +122,9 @@ async def create_game_session(
         ts=ts,
     )
 
+    # Metrics – count INIT events
+    metrics.increment_game_event(event_type=init_game_event.type)
+
     await session_state_repository.push_session_event(
         redis_client=context.redis_client,
         game_id=str(game_session.id),
@@ -136,5 +140,7 @@ async def create_game_session(
             engine=init_game_state,
             seq=init_sequence,
         )
+
+    metrics.increment_game_count()
 
     return {"session_id": session_id, "player_id": human_player_id}
