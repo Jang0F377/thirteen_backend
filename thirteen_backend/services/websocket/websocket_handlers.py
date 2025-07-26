@@ -22,16 +22,21 @@ async def handle_play(
     player_id: str,
     msg: dict[str, Any],
 ) -> None:
+    choices = msg["payload"]
     LOGGER.info(
         "Handling play for player %s",
         player_id,
-        extra={"session_id": session_id, "msg": msg},
+        extra={
+            "session_id": session_id,
+            "msg": msg,
+            "choices": choices,
+        },
     )
-    choices = msg["payload"]
 
-    engine, _ = await _load_engine(redis_client=redis_client, session_id=session_id)
+    engine, seq = await _load_engine(redis_client=redis_client, session_id=session_id)
 
     # TODO: Add validation/removal logic for choices here
+    
 
     engine.state.increment_turn_number()
 

@@ -31,7 +31,7 @@ async def play_bots_until_human(
     while True:
         current_seat = engine.state.current_turn_order[
             (engine.state.turn_number - 1)
-            % engine.cfg.players_count  # -1 because turn_number is 1-indexed
+            % len(engine.state.current_turn_order)  # -1 because turn_number is 1-indexed
         ]
         current_player = engine.players[current_seat]
 

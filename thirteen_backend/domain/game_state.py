@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from thirteen_backend.logger import LOGGER
 from thirteen_backend.domain.card import Card
 from thirteen_backend.domain.player import Bot, Human
 from thirteen_backend.types import Play, PlayType
@@ -83,12 +84,32 @@ class GameState:
         self.last_play = None
 
     def handle_new_lead(self, player_idx: int) -> None:
+        LOGGER.info(
+            "Handling new lead for player %s",
+            player_idx,
+            extra={
+                "passed_players": self.passed_players,
+                "current_play_type": self.current_play_type,
+                "current_leader": self.current_leader,
+                "current_turn_order": self.current_turn_order,
+            },
+        )
         self.reset_passed_players()
         self.reset_current_play_pile()
         self.reset_current_play_type()
         self.set_current_leader(player_idx)
 
     def handle_new_hand(self) -> None:
+        LOGGER.info(
+            "Game has ended - starting new hand",
+            extra={
+                "game_id": self.game_id,
+                "hand_number": self.hand_number,
+                "placements": self.placements_this_hand,
+                "turn_number": self.turn_number,
+                "game_state": self.to_public_dict(),
+            },
+        )
         self.increment_hand_number()
         self.reset_passed_players()
         self.reset_placements()

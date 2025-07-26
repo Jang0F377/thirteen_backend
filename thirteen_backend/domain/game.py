@@ -71,7 +71,7 @@ class Game:
         if self.state.has_all_passed():
             self.state.handle_new_lead(player_idx=self.state.get_new_leader_idx())
         self.state.increment_turn_number()
-        return None
+        self._handle_player_gone_out(player_idx=player_idx)
 
     def apply_play(self, player_idx: int, play: Play) -> None:
         LOGGER.info("Applying play for player %s: %s", player_idx, play["cards"])
@@ -84,6 +84,7 @@ class Game:
         self.state.add_to_played_pile(play["cards"])
         self.state.set_last_play(play)
         self.state.increment_turn_number()
+        self._handle_player_gone_out(player_idx=player_idx)
 
     # ------------------------------------------------------------------
     # Serialisation helpers
@@ -123,24 +124,28 @@ class Game:
             return  # nothing to do
 
         LOGGER.info("Handling player %s going out", player_idx)
-        self.state.add_placement(player_idx)  # ➊
+        self.state.add_placement(player_idx)  # 1
         rank = len(self.state.placements_this_hand)
-        self.players[player_idx].placements.append(rank)  # ➋
+        self.players[player_idx].placements.append(rank)  # 2
 
-        # ➌ – keeps the turn-rotation code simple because we will no longer
+        # 3 – keeps the turn-rotation code simple because we will no longer
         #     land on a seat that cannot act.
         self.state.remove_player_from_turn_order(player_idx)
 
         # If only one active player remains the hand is over
         if len(self.state.current_turn_order) == 1:
-            LOGGER.info(
-                "This game has ended - there is only one player with cards left",
-                extra={"game_id": self.id},
-            )
             last_idx = self.state.current_turn_order[0]
             self.state.add_placement(last_idx)
             self.players[last_idx].placements.append(
                 len(self.state.placements_this_hand)
+            )
+            LOGGER.info(
+                "This game has ended - there is only one player with cards left",
+                extra={
+                    "game_id": self.id,
+                    "placements": self.state.placements_this_hand,
+                    "game_state": self.state.to_full_dict(),
+                },
             )
             self._start_new_hand()
 
