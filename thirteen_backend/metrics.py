@@ -40,6 +40,7 @@ GAME_EVENT_COUNT = Counter(
 # WebSocket helpers
 # ---------------------------------------------------------------------------
 
+
 def increment_ws_connections(session_id: str) -> None:
     """Increase the active WebSocket connection count for *session_id*."""
     WEBSOCKET_CONNECTIONS.labels(session_id=session_id).inc()

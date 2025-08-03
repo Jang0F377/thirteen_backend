@@ -8,10 +8,10 @@ import logging
 import uuid
 from typing import Any, Dict, Set
 
+from fastapi import WebSocket, WebSocketDisconnect
+
 # Metrics
 from thirteen_backend import metrics
-
-from fastapi import WebSocket, WebSocketDisconnect
 
 logger = logging.getLogger("websocket-manager")
 
@@ -62,7 +62,9 @@ class WebSocketManager:  # pylint: disable=too-few-public-methods
                 else:
                     await ws.send_json(message)
                 # Metrics: count successfully delivered websocket messages
-                metrics.increment_ws_messages(session_id=session_id, direction="broadcast")
+                metrics.increment_ws_messages(
+                    session_id=session_id, direction="broadcast"
+                )
             except WebSocketDisconnect:
                 dead.add(conn_id)
         for conn_id in dead:

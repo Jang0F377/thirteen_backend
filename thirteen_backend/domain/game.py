@@ -148,6 +148,8 @@ class Game:
                 },
             )
             self._start_new_hand()
+        # else:
+        # pass  # TODO: handle player going out in the middle of a hand
 
     def _start_new_hand(self) -> None:
         LOGGER.info("Starting a new hand", extra={"game_id": self.id})

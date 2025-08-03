@@ -3,6 +3,7 @@ from uuid import UUID
 
 from redis.asyncio import Redis
 
+from thirteen_backend import metrics
 from thirteen_backend.domain.game import Game
 from thirteen_backend.logger import LOGGER
 from thirteen_backend.models.game_event_model import GameEventType
@@ -14,7 +15,6 @@ from thirteen_backend.repositories.session_state_repository import (
 )
 from thirteen_backend.services.websocket.websocket_manager import websocket_manager
 from thirteen_backend.services.websocket.websocket_utils import make_state_sync
-from thirteen_backend import metrics
 from thirteen_backend.types import Play
 
 
